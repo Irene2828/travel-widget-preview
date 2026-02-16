@@ -151,3 +151,25 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+/* Tactile Delight */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.active-scale:active {
+    transform: scale(0.96) !important;
+}
+
+.transition-tactile {
+    transition: transform 0.1s ease;
+}
+
+.carousel-momentum {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+}
+
+.mask-linear-fade {
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}

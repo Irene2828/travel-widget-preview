@@ -5,3 +5,8 @@ dist
 .env.local
 .vscode
 .idea
+._*
+src/._*
+local_npm_cache/
+local_npm_cache_2/
+*.log
