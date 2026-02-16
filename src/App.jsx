@@ -441,8 +441,8 @@ export default function App() {
                         </MapContainer>
                     </div>
 
-                    {/* UNIFIED TOP UI (Floating Dock) */}
-                    <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[95%] z-[500] pointer-events-none">
+                    {/* UNIFIED TOP UI (Floating Dock) - 75% closer to edge (6 -> 1.5) */}
+                    <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-[95%] z-[500] pointer-events-none">
                         <div className="bg-white/95 backdrop-blur-xl rounded-[24px] shadow-xl border border-white/50 p-2 pointer-events-auto relative" ref={dropdownRef}>
 
                             {/* Unified Single Row */}
@@ -532,8 +532,8 @@ export default function App() {
                         </div>
                     </div>
 
-                    {/* CAROUSEL LAYER - Integrated Toggle & Animation */}
-                    <div className="absolute bottom-4 left-0 w-full z-[100] pb-2">
+                    {/* CAROUSEL LAYER - 75% closer to edge (4 -> 1) */}
+                    <div className="absolute bottom-1 left-0 w-full z-[100] pb-2">
                         {/* Premium Toggle Button - Tucked closer to cards */}
                         <div className="flex justify-end px-6 -mb-3 relative z-[110]">
                             <button
