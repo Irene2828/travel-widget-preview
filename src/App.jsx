@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { ACCOMMODATIONS } from './data'
-import { Star, MapPin, ArrowRight, Heart, SlidersHorizontal, ChevronDown, Check, Calendar, Users } from 'lucide-react'
+import { Star, MapPin, ArrowRight, Heart, SlidersHorizontal, ChevronDown, Check, Calendar, Users, Hotel, X, Eye } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 
@@ -542,12 +542,22 @@ export default function App() {
                                 title={isCardsVisible ? "Hide Stays" : "Show Stays"}
                             >
                                 {isCardsVisible ? (
-                                    <motion.div animate={{ rotate: 0 }} transition={{ duration: 0.3 }}>
-                                        <ChevronDown size={14} className="group-hover:translate-y-0.5 transition-transform" />
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="flex items-center gap-1"
+                                    >
+                                        <Hotel size={12} className="text-slate-400" />
+                                        <X size={12} className="text-slate-600" />
                                     </motion.div>
                                 ) : (
-                                    <motion.div animate={{ scale: [0.9, 1.1, 1] }} transition={{ duration: 0.4 }}>
-                                        <Star size={12} fill="currentColor" className="text-[#135bec]" />
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ duration: 0.4, type: 'spring', stiffness: 200 }}
+                                    >
+                                        <Eye size={14} className="text-[#135bec]" />
                                     </motion.div>
                                 )}
                             </button>
