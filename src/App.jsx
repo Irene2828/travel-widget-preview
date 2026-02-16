@@ -72,7 +72,7 @@ const GuestDropdown = ({ count, setCount, close }) => (
             <span className="text-sm font-bold text-slate-900">{count} Guests</span>
             <button onClick={() => setCount(count + 1)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">+</button>
         </div>
-        <button onClick={close} className="w-full py-3 bg-[#135bec] hover:bg-blue-700 text-white rounded-2xl text-xs font-bold transition-all shadow-lg active-scale">Apply</button>
+        <button onClick={close} className="w-full py-3 bg-slate-900/70 text-white hover:bg-slate-900/80 rounded-2xl text-xs font-bold transition-all shadow-sm active-scale">Apply</button>
     </motion.div>
 )
 
@@ -89,11 +89,11 @@ const FilterDropdown = ({ selected, setSelected, close }) => (
                 onClick={() => { setSelected(f); close(); }}
                 className={clsx(
                     "w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between active-scale transition-tactile mb-1 last:mb-0",
-                    selected === f ? "bg-slate-900/40 text-slate-900 shadow-sm" : "text-[#1A1A1A] hover:bg-white/50"
+                    selected === f ? "bg-slate-900/70 text-white shadow-sm" : "text-[#1A1A1A] hover:bg-white/50"
                 )}
             >
                 {f}
-                {selected === f && <Check size={12} className="text-slate-900" />}
+                {selected === f && <Check size={12} className="text-white" />}
             </button>
         ))}
     </motion.div>
@@ -250,6 +250,7 @@ export default function App() {
     const [dateRange, setDateRange] = useState('Dates');
     const [guestCount, setGuestCount] = useState(2);
     const [selectedFilter, setSelectedFilter] = useState('Top Rated');
+    const [isCardsVisible, setIsCardsVisible] = useState(true);
 
     const toggleDropdown = (name, event) => {
         if (openDropdown === name) {
@@ -354,8 +355,8 @@ export default function App() {
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-typography-primary pb-[100px]">
 
-            {/* Blog Intro */}
-            <article className="blog-intro-content max-w-[680px] mx-auto px-6 pt-12 pb-8">
+            {/* Blog Intro - Reduced Top Padding by 75% (12 -> 3) */}
+            <article className="blog-intro-content max-w-[680px] mx-auto px-6 pt-3 pb-2">
                 <span className="category-tag text-xs font-bold text-[#757575] uppercase tracking-widest mb-3 block">Bali, Indonesia</span>
                 <h1 className="blog-title text-3xl md:text-3xl font-bold text-[#1A1A1A] leading-[1.15] tracking-tight mb-6">
                     Escaping the Noise: My Secret Spots in Ubud
@@ -380,8 +381,8 @@ export default function App() {
                 </div>
             </article>
 
-            {/* IMMERSIVE WIDGET CONTAINER - ALIGNED WITH BLOG TEXT */}
-            <div className="w-full max-w-[680px] mx-auto px-4 mb-20 isolate">
+            {/* IMMERSIVE WIDGET CONTAINER - Reduced Bottom Margin by 75% (20 -> 5) */}
+            <div className="w-full max-w-[680px] mx-auto px-4 mb-5 isolate">
                 <div className="w-full h-[85vh] md:h-[850px] bg-slate-100 md:rounded-[2.5rem] overflow-hidden shadow-2xl relative md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
 
                     {/* MAP LAYER - ZOOM 10 */}
@@ -452,7 +453,7 @@ export default function App() {
                                         <MapPin size={12} />
                                     </button>
                                     <div className="flex flex-col justify-center min-w-0 gap-1">
-                                        <label className="text-[8px] font-black text-[#007E8F] uppercase tracking-wider leading-none truncate">You'll go to</label>
+                                        <label className="text-[8px] font-black text-[#007E8F] uppercase tracking-wider leading-none truncate">Let's go to</label>
                                         <input
                                             type="text"
                                             defaultValue="Ubud, Bali"
@@ -531,119 +532,149 @@ export default function App() {
                         </div>
                     </div>
 
-                    {/* CAROUSEL LAYER */}
+                    {/* CAROUSEL LAYER - Integrated Toggle & Animation */}
                     <div className="absolute bottom-4 left-0 w-full z-[100] pb-2">
-                        <div
-                            ref={cardsContainerRef}
-                            className="flex overflow-x-auto snap-x snap-mandatory px-4 gap-4 scrollbar-hide pb-2 items-end h-[340px] carousel-momentum"
-                            style={{ scrollPaddingLeft: '17.5%' }}
-                        >
-                            {ACCOMMODATIONS.map((place) => {
-                                const isActive = place.id === activeId;
-                                return (
-                                    <div
-                                        key={place.id}
-                                        ref={el => cardRefs.current[place.id] = el}
-                                        data-id={place.id}
-                                        className={clsx(
-                                            "snap-center shrink-0 w-[65%] transition-all duration-300 relative group",
-                                            isActive ? "scale-100 z-10" : "scale-95 z-0"
-                                        )}
-                                        onClick={() => {
-                                            if (!isActive) handlePinClick(place.id);
-                                        }}
-                                    >
-                                        {/* Card Content - WHITE FROSTED GLASS */}
-                                        <div className={clsx(
-                                            "relative rounded-[24px] overflow-hidden backdrop-blur-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-white/80 p-2.5 flex flex-col gap-2 transition-colors duration-500",
-                                            "bg-white/85"
-                                        )}>
-                                            {/* Progress Shimmer */}
-                                            {isActive && bookingState !== 'idle' && (
-                                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#135bec] to-transparent animate-pulse opacity-80 z-50"></div>
-                                            )}
-
-                                            {/* Image */}
-                                            <div className="h-32 w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
-                                                <img src={place.image} alt={place.name} className="w-full h-full object-cover transform decoration-0 group-hover:scale-105 transition-transform duration-700" />
-                                                <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                                                    <Star size={9} className="text-yellow-500" fill="currentColor" />
-                                                    <span className="text-[9px] font-bold text-slate-900">{place.rating}</span>
-                                                </div>
-
-                                                {place.tag && (
-                                                    <div className={clsx(
-                                                        "absolute bottom-2 left-2 -rotate-6 px-2.5 py-1 shadow-lg transform origin-bottom-left z-20",
-                                                        place.tagClass || "bg-yellow-400 text-black"
-                                                    )}>
-                                                        <span style={{ fontFamily: 'Caveat, cursive' }} className="text-xs font-bold leading-none block pt-0.5">{place.tag}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Info */}
-                                            <div className="px-1 pb-0.5">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <div>
-                                                        <h3 className="text-sm font-bold text-slate-900 leading-tight tracking-tight line-clamp-1">{place.name}</h3>
-                                                        <p className="text-[10px] text-slate-500 flex items-center mt-0.5 font-medium line-clamp-1">
-                                                            <MapPin size={10} className="mr-0.5 text-slate-400" /> {place.distance}
-                                                        </p>
-                                                    </div>
-                                                    <div className="text-right shrink-0">
-                                                        <span className="text-[10px] font-bold text-slate-500">from </span>
-                                                        <span className="text-sm font-black text-[#135bec]">${place.price}</span>
-                                                        <span className="text-[10px] font-bold text-slate-500">/night</span>
-                                                    </div>
-                                                </div>
-
-                                                {/* Booking Button */}
-                                                <div className="flex flex-col items-center">
-                                                    <button
-                                                        onClick={(e) => handleBook(e, place.id)}
-                                                        disabled={bookingState !== 'idle' || !isActive}
-                                                        style={{ borderRadius: '32px' }}
-                                                        className={clsx(
-                                                            "w-full py-2.5 text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
-                                                            bookingState === 'idle'
-                                                                ? (isActive ? "bg-[#135bec] hover:bg-blue-600 text-white shadow-blue-500/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400")
-                                                                : "bg-slate-900 text-white cursor-wait"
-                                                        )}
-                                                    >
-                                                        <AnimatePresence mode='wait'>
-                                                            {bookingState === 'idle' && (
-                                                                <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-1">
-                                                                    Book Now <ArrowRight size={14} />
-                                                                </motion.span>
-                                                            )}
-                                                            {bookingState === 'securing' && (
-                                                                <motion.span key="securing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-2">
-                                                                    <div className="w-2.5 h-2.5 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                                                                    Securing...
-                                                                </motion.span>
-                                                            )}
-                                                            {bookingState === 'redirecting' && (
-                                                                <motion.span key="redirecting" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-2">
-                                                                    Redirecting...
-                                                                </motion.span>
-                                                            )}
-                                                        </AnimatePresence>
-                                                    </button>
-                                                    <p className="text-[11px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
-                                                        Secure booking. Free cancellation.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                        {/* Premium Toggle Button */}
+                        <div className="flex justify-end px-4 mb-2">
+                            <button
+                                onClick={() => setIsCardsVisible(!isCardsVisible)}
+                                className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md shadow-lg border border-white/50 flex items-center justify-center text-slate-600 active-scale transition-all hover:bg-white hover:text-[#135bec] group"
+                                title={isCardsVisible ? "Hide Stays" : "Show Stays"}
+                            >
+                                {isCardsVisible ? (
+                                    <motion.div animate={{ rotate: 0 }} transition={{ duration: 0.3 }}>
+                                        <ChevronDown size={14} className="group-hover:translate-y-0.5 transition-transform" />
+                                    </motion.div>
+                                ) : (
+                                    <motion.div animate={{ scale: [0.9, 1.1, 1] }} transition={{ duration: 0.4 }}>
+                                        <Star size={12} fill="currentColor" className="text-[#135bec]" />
+                                    </motion.div>
+                                )}
+                            </button>
                         </div>
-                    </div>
 
-                    {/* Touch Indicator */}
-                    <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-24 h-1 bg-gray-400/50 rounded-full z-[200] opacity-50 backdrop-blur-sm"></div>
+                        <AnimatePresence>
+                            {isCardsVisible && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 40, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 40, scale: 0.98 }}
+                                    transition={{ duration: 0.4, cubicBezier: [0.16, 1, 0.3, 1] }}
+                                >
+                                    <div
+                                        ref={cardsContainerRef}
+                                        className="flex overflow-x-auto snap-x snap-mandatory px-4 gap-4 scrollbar-hide pb-2 items-end h-[340px] carousel-momentum"
+                                        style={{ scrollPaddingLeft: '17.5%' }}
+                                    >
+                                        {ACCOMMODATIONS.map((place) => {
+                                            const isActive = place.id === activeId;
+                                            return (
+                                                <div
+                                                    key={place.id}
+                                                    ref={el => cardRefs.current[place.id] = el}
+                                                    data-id={place.id}
+                                                    className={clsx(
+                                                        "snap-center shrink-0 w-[65%] transition-all duration-300 relative group",
+                                                        isActive ? "scale-100 z-10" : "scale-95 z-0"
+                                                    )}
+                                                    onClick={() => {
+                                                        if (!isActive) handlePinClick(place.id);
+                                                    }}
+                                                >
+                                                    {/* Card Content - WHITE FROSTED GLASS */}
+                                                    <div className={clsx(
+                                                        "relative rounded-[24px] overflow-hidden backdrop-blur-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-white/80 p-2.5 flex flex-col gap-2 transition-colors duration-500",
+                                                        "bg-white/85"
+                                                    )}>
+                                                        {/* Progress Shimmer */}
+                                                        {isActive && bookingState !== 'idle' && (
+                                                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#135bec] to-transparent animate-pulse opacity-80 z-50"></div>
+                                                        )}
+
+                                                        {/* Image */}
+                                                        <div className="h-32 w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
+                                                            <img src={place.image} alt={place.name} className="w-full h-full object-cover transform decoration-0 group-hover:scale-105 transition-transform duration-700" />
+                                                            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                                                                <Star size={9} className="text-yellow-500" fill="currentColor" />
+                                                                <span className="text-[9px] font-bold text-slate-900">{place.rating}</span>
+                                                            </div>
+
+                                                            {place.tag && (
+                                                                <div className={clsx(
+                                                                    "absolute bottom-2 left-2 -rotate-6 px-2.5 py-1 shadow-lg transform origin-bottom-left z-20",
+                                                                    place.tagClass || "bg-yellow-400 text-black"
+                                                                )}>
+                                                                    <span style={{ fontFamily: 'Caveat, cursive' }} className="text-xs font-bold leading-none block pt-0.5">{place.tag}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Info */}
+                                                        <div className="px-1 pb-0.5">
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <div>
+                                                                    <h3 className="text-sm font-bold text-slate-900 leading-tight tracking-tight line-clamp-1">{place.name}</h3>
+                                                                    <p className="text-[10px] text-slate-500 flex items-center mt-0.5 font-medium line-clamp-1">
+                                                                        <MapPin size={10} className="mr-0.5 text-slate-400" /> {place.distance}
+                                                                    </p>
+                                                                </div>
+                                                                <div className="text-right shrink-0">
+                                                                    <span className="text-[10px] font-bold text-slate-500">from </span>
+                                                                    <span className="text-sm font-black text-[#135bec]">${place.price}</span>
+                                                                    <span className="text-[10px] font-bold text-slate-500">/night</span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Booking Button */}
+                                                            <div className="flex flex-col items-center">
+                                                                <button
+                                                                    onClick={(e) => handleBook(e, place.id)}
+                                                                    disabled={bookingState !== 'idle' || !isActive}
+                                                                    style={{ borderRadius: '32px' }}
+                                                                    className={clsx(
+                                                                        "w-full py-2.5 text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
+                                                                        bookingState === 'idle'
+                                                                            ? (isActive ? "bg-[#135bec] hover:bg-blue-600 text-white shadow-blue-500/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400")
+                                                                            : "bg-slate-900 text-white cursor-wait"
+                                                                    )}
+                                                                >
+                                                                    <AnimatePresence mode='wait'>
+                                                                        {bookingState === 'idle' && (
+                                                                            <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-1">
+                                                                                Book Now <ArrowRight size={14} />
+                                                                            </motion.span>
+                                                                        )}
+                                                                        {bookingState === 'securing' && (
+                                                                            <motion.span key="securing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-2">
+                                                                                <div className="w-2.5 h-2.5 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                                                                                Securing...
+                                                                            </motion.span>
+                                                                        )}
+                                                                        {bookingState === 'redirecting' && (
+                                                                            <motion.span key="redirecting" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-2">
+                                                                                Redirecting...
+                                                                            </motion.span>
+                                                                        )}
+                                                                    </AnimatePresence>
+                                                                </button>
+                                                                <p className="text-[11px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
+                                                                    Secure booking. Free cancellation.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
+
+                {/* Touch Indicator */}
+                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-24 h-1 bg-gray-400/50 rounded-full z-[200] opacity-50 backdrop-blur-sm"></div>
             </div>
 
             {/* CONCIERGE OVERLAY */}
