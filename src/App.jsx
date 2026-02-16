@@ -534,11 +534,11 @@ export default function App() {
 
                     {/* CAROUSEL LAYER - Integrated Toggle & Animation */}
                     <div className="absolute bottom-4 left-0 w-full z-[100] pb-2">
-                        {/* Premium Toggle Button */}
-                        <div className="flex justify-end px-4 mb-2">
+                        {/* Premium Toggle Button - Tucked closer to cards */}
+                        <div className="flex justify-end px-6 -mb-3 relative z-[110]">
                             <button
                                 onClick={() => setIsCardsVisible(!isCardsVisible)}
-                                className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md shadow-lg border border-white/50 flex items-center justify-center text-slate-600 active-scale transition-all hover:bg-white hover:text-[#135bec] group"
+                                className="w-9 h-9 rounded-full bg-white/95 backdrop-blur-md shadow-xl border border-white/50 flex items-center justify-center text-slate-600 active-scale transition-all hover:bg-white hover:text-[#135bec] group"
                                 title={isCardsVisible ? "Hide Stays" : "Show Stays"}
                             >
                                 {isCardsVisible ? (
