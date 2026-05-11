@@ -27,7 +27,7 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="bg-white p-4 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
+            className="bg-white p-6 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
         >
             <div className="flex justify-between items-center px-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Select Date</span>
@@ -76,9 +76,9 @@ const GuestDropdown = ({ count, setCount, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white p-4 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-64 ring-1 ring-black/5"
+        className="bg-white p-6 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-64 ring-1 ring-black/5"
     >
-        <div className="flex items-center justify-between bg-white/50 rounded-2xl p-2 mb-4">
+        <div className="flex items-center justify-between bg-white/50 rounded-2xl p-2">
             <button onClick={() => setCount(Math.max(1, count - 1))} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">-</button>
             <span className="text-sm font-bold text-slate-900">{count} Guests</span>
             <button onClick={() => setCount(count + 1)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">+</button>
@@ -183,11 +183,11 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
         >
             <div className="max-w-md w-full">
                 {/* Success Icon - Self-drawing SVG */}
-                <div className="mb-10 relative">
+                <div className="mb-0 relative">
                     <div className="w-20 h-20 flex items-center justify-center mx-auto">
                         <motion.svg 
                             viewBox="0 0 24 24" 
-                            className="w-12 h-12 text-[#003580]"
+                            className="w-12 h-12 text-lime-600"
                             fill="none" 
                             stroke="currentColor" 
                             strokeWidth="3" 
@@ -207,11 +207,17 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 </div>
 
                 {/* Value Stack */}
-                <div className="flex flex-col items-center gap-3 mb-8">
-                    <div className="flex items-center gap-1.5 text-[#003580] bg-white px-3 py-1 rounded-full border border-gray-100 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-                        <ShieldCheck size={12} strokeWidth={2.5} />
-                        <span className="text-[10px] font-bold uppercase tracking-wider">Price Matched</span>
-                    </div>
+                <div className="flex flex-col items-center gap-3 mb-8 -mt-2">
+                    {isComplete && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex items-center gap-1 bg-lime-200 text-lime-900 px-3 pt-1 pb-1.5 rounded-full shadow-sm"
+                        >
+                            <Check size={12} strokeWidth={2.5} className="text-lime-900" />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">Locked the price!</span>
+                        </motion.div>
+                    )}
                     <span 
                         className="text-6xl font-normal text-zinc-900 tabular-nums tracking-tighter font-lora"
                     >
@@ -222,7 +228,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 {/* Precision Divider */}
                 <div className="w-full bg-zinc-100 h-1.5 rounded-full mb-10 relative overflow-hidden">
                     <motion.div
-                        className="h-full bg-[#003580] rounded-full"
+                        className="h-full bg-lime-500 rounded-full"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
@@ -341,6 +347,7 @@ export default function App() {
     }, []);
     // 2. Map Pin Click
     const handlePinClick = (id) => {
+        setIsCardsVisible(true);
         setActiveId(id);
         const card = cardRefs.current[id];
         if (card && cardsContainerRef.current) {
@@ -367,7 +374,7 @@ export default function App() {
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-typography-primary">
 
-            <article className="blog-intro-content max-w-[680px] mx-auto px-6 pt-3 pb-2">
+            <article className="blog-intro-content max-w-[680px] mx-auto px-[18px] pt-3 pb-2">
                 <a
                     href="/"
                     aria-label="Back to homepage"
@@ -400,8 +407,8 @@ export default function App() {
                 </div>
             </article>
 
-            <div className="w-full max-w-[680px] mx-auto px-4 mb-5 isolate">
-                <div className="w-full h-[700px] md:h-[850px] bg-slate-100 md:rounded-[2.5rem] overflow-hidden shadow-[0_16px_32px_rgba(0,0,0,0.12)] relative md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
+            <div className="w-full max-w-[680px] mx-auto px-[18px] mb-5 isolate">
+                <div className="w-full h-[75vh] md:h-[850px] bg-slate-100 md:rounded-[2.5rem] overflow-hidden shadow-[0_11px_22px_rgba(0,0,0,0.12)] relative md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
 
                     <div className="absolute inset-0 z-0">
                         <MapContainer
@@ -431,7 +438,6 @@ export default function App() {
                                     iconSize: [60, 40],
                                     iconAnchor: [30, 42]
                                 });
-
                                 return (
                                     <Marker
                                         key={`${place.id}-${isActive}`}
@@ -441,7 +447,7 @@ export default function App() {
                                             click: () => handlePinClick(place.id)
                                         }}
                                     />
-                                )
+                                );
                             })}
                         </MapContainer>
                     </div>
@@ -571,11 +577,11 @@ export default function App() {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 52, scale: 0.98 }}
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="absolute inset-0 pointer-events-auto"
+                                    className="absolute bottom-4 left-0 right-0 pointer-events-auto h-[295px]"
                                 >
                                     <div
                                         ref={cardsContainerRef}
-                                        className="flex overflow-x-auto snap-x snap-mandatory pl-11 pr-4 gap-4 scrollbar-hide pb-2 items-end h-full carousel-momentum"
+                                        className="flex overflow-x-auto snap-x snap-mandatory pl-11 pr-4 gap-6 scrollbar-hide pb-1.5 items-stretch h-full carousel-momentum"
                                         style={{ scrollPaddingLeft: '2.75rem' }}
                                     >
                                         {ACCOMMODATIONS.map((place) => {
@@ -586,47 +592,55 @@ export default function App() {
                                                     ref={el => cardRefs.current[place.id] = el}
                                                     data-id={place.id}
                                                     className={clsx(
-                                                        "snap-center shrink-0 w-[72%] transition-all duration-300 relative group",
-                                                        isActive ? "scale-100 z-10" : "scale-95 z-0"
+                                                        "snap-center shrink-0 w-[86%] h-full relative group",
+                                                        isActive ? "z-10" : "z-0"
                                                     )}
                                                     onClick={() => {
                                                         if (!isActive) handlePinClick(place.id);
                                                     }}
                                                 >
                                                     <div className={clsx(
-                                                        "relative rounded-[24px] overflow-hidden backdrop-blur-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-white/80 p-2.5 flex flex-col gap-2 transition-colors duration-500",
-                                                        "bg-white/85"
+                                                        "relative h-full rounded-[24px] overflow-hidden backdrop-blur-[20px] border border-white/80 p-2.5 flex flex-col transition-all duration-500",
+                                                        isActive ? "shadow-[0_12px_32px_rgba(0,0,0,0.18)] bg-white" : "shadow-[0_8px_24px_rgba(0,0,0,0.12)] bg-white/85"
                                                     )}>
                                                         {isActive && bookingState !== 'idle' && (
                                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#135bec] to-transparent animate-pulse opacity-80 z-50"></div>
                                                         )}
 
-                                                        <div className="h-32 w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
+                                                        <div className="h-[141px] w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
                                                             <img src={place.image} alt={place.name} className="w-full h-full object-cover transform decoration-0 group-hover:scale-105 transition-transform duration-700" />
                                                             <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                                                                 <Star size={9} className="text-yellow-500" fill="currentColor" />
                                                                 <span className="text-[9px] font-bold text-slate-900">{place.rating}</span>
                                                             </div>
+                                                            {place.tag && (
+                                                                <div className={clsx(
+                                                                    "absolute bottom-4 left-4 px-4 py-2 shadow-lg transform -rotate-3 z-10",
+                                                                    place.tagClass
+                                                                )}>
+                                                                    <span className="text-[18px] font-bold tracking-normal leading-none" style={{ fontFamily: "'Caveat', cursive" }}>
+                                                                        {place.tag}
+                                                                    </span>
+                                                                </div>
+                                                            )}
                                                         </div>
 
-                                                        <div className="px-1 pb-0.5">
-                                                            <div className="flex justify-between items-baseline mb-2">
-                                                                <div>
-                                                                    <h3 className="text-sm font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
-                                                                    <p className="text-[10px] text-slate-500 flex items-center mt-0.5 font-medium line-clamp-2">
-                                                                        <MapPin size={10} className="mr-0.5 text-slate-400" /> {place.distance}
-                                                                    </p>
-                                                                </div>
-                                                                <div className="text-right shrink-0 flex flex-col items-end">
-                                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">from</span>
-                                                                    <div className="flex items-baseline gap-0.5">
-                                                                        <span className="text-sm font-black text-[#135bec] leading-none">${place.price}</span>
-                                                                        <span className="text-[10px] font-bold text-slate-400 leading-none">/night</span>
-                                                                    </div>
+                                                        <div className="px-1 pb-0.5 flex-grow flex flex-col justify-start pt-2">
+                                                            <div className="mb-1">
+                                                                <h3 className="text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
+                                                            </div>
+                                                            <div className="flex justify-between items-baseline mb-1">
+                                                                <p className="text-[12px] text-slate-500 flex items-center font-medium line-clamp-1">
+                                                                    <MapPin size={11} className="mr-0.5 text-slate-400" /> {place.distance}
+                                                                </p>
+                                                                <div className="flex items-baseline gap-1 shrink-0">
+                                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">from</span>
+                                                                    <span className="text-[15px] font-black text-[#135bec] leading-none">${place.price}</span>
+                                                                    <span className="text-[10px] font-bold text-slate-400 leading-none">/night</span>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex flex-col items-center">
+                                                            <div className="flex flex-col items-center mt-3">
                                                                 <button
                                                                     onClick={(e) => handleBook(e, place.id)}
                                                                     disabled={bookingState !== 'idle' || !isActive}
@@ -685,7 +699,7 @@ export default function App() {
             </AnimatePresence>
 
             {/* Footer Content */}
-            <div className="max-w-[680px] mx-auto px-6 pb-[122px] text-[17px] leading-[1.6] text-typography-primary">
+            <div className="max-w-[680px] mx-auto px-[18px] pb-[122px] text-[17px] leading-[1.6] text-typography-primary">
                 <h3 className="text-xl font-bold mb-3">Why this area matters</h3>
                 <p className="text-typography-secondary mb-6">
                     Staying in these specific coordinates puts you exactly 10 minutes from the Monkey Forest but far enough to avoid the tour bus crowds. It’s the sweet spot for digital nomads and peace-seekers alike.
