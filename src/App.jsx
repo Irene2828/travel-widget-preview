@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { ACCOMMODATIONS } from './data'
-import { Star, MapPin, ArrowRight, Heart, SlidersHorizontal, ChevronDown, Check, Calendar, Users, Hotel, X, Eye } from 'lucide-react'
+import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, ShieldCheck, Hotel, Eye, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 
@@ -49,7 +49,7 @@ const DateDropdown = ({ setRange, close }) => {
                         onClick={() => { setRange(`Feb ${item.d}`); close(); }}
                         className={clsx(
                             "w-12 h-16 shrink-0 rounded-2xl flex flex-col items-center justify-center gap-1 snap-center transition-all active-scale transition-tactile",
-                            i === 0 ? "bg-[#363636] text-white shadow-lg shadow-black/10" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                            i === 0 ? "bg-slate-900/60 text-white shadow-lg shadow-black/10 border border-white/15 backdrop-blur-md" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
                         )}
                     >
                         <span className={clsx("text-[9px] font-bold", i === 0 ? "text-white/60" : "text-slate-400")}>{item.day}</span>
@@ -139,10 +139,8 @@ function ConciergeOverlay({ hotel, onClose }) {
     useEffect(() => {
         if (stage === 'whiteout') {
             const timer = setTimeout(() => {
-                // Exit and Redirect
-                window.open('https://www.google.com/search?q=https://stay22.com/demo', '_blank');
                 onClose();
-            }, 3000);
+            }, 4500);
             return () => clearTimeout(timer);
         }
     }, [stage, onClose]);
@@ -176,43 +174,37 @@ function ConciergeOverlay({ hotel, onClose }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="fixed inset-0 z-[9999] bg-white/30 backdrop-blur-[40px] backdrop-saturate-150 flex flex-col items-center justify-center font-sans p-6"
+            className="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-xl backdrop-saturate-150 flex flex-col items-center justify-center font-sans p-6 border border-black/5"
         >
             <div className="flex flex-col items-center max-w-sm w-full text-center">
-                {/* Image Stack */}
-                <div className="relative mb-8">
-                    <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-                        <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 bg-green-500 text-white p-1.5 rounded-full border-[3px] border-white shadow-sm flex items-center justify-center">
-                        <Check size={14} strokeWidth={4} />
-                    </div>
+                {/* Success Icon Only */}
+                <div className="w-12 h-12 bg-white text-zinc-900 rounded-full border border-black/5 shadow-sm flex items-center justify-center mb-10">
+                    <Check size={16} strokeWidth={3.5} />
                 </div>
 
-                {/* Text Stack */}
-                <h2 className="text-2xl font-bold text-[#1A1A1A] mb-2 leading-tight">
-                    Finalizing your stay at <br /> {hotel.name}...
-                </h2>
-                <p className="text-sm text-gray-500 font-medium mb-10 leading-relaxed px-4">
-                    Connecting you to our partner for the best available rate.
-                </p>
+                {/* Value Stack */}
+                <div className="flex flex-col items-center gap-3 mb-8">
+                    <div className="flex items-center gap-1.5 text-[#003580] bg-white px-3 py-1 rounded-full border border-gray-100 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
+                        <ShieldCheck size={12} strokeWidth={2.5} />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Price Matched</span>
+                    </div>
+                    <span className="text-6xl font-normal text-zinc-900 tabular-nums tracking-tighter font-lora">
+                        ${displayedPrice}
+                    </span>
+                </div>
 
-                {/* Price Match Delight */}
-                <div className="w-full bg-gray-200/50 h-1.5 rounded-full overflow-hidden mb-6 relative">
+                {/* Precision Divider */}
+                <div className="w-full bg-zinc-100 h-1.5 rounded-full mb-10 relative overflow-hidden">
                     <motion.div
-                        className="h-full bg-[#1A1A1A] rounded-full"
+                        className="h-full bg-[#003580] rounded-full"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-green-600 bg-green-50 px-2 py-1 rounded-md border border-green-100">
-                        Price Matched
-                    </span>
-                    <span className="text-3xl font-black text-[#1A1A1A] tabular-nums tracking-tight">
-                        ${displayedPrice}
-                    </span>
-                </div>
+                {/* Narrative Stack */}
+                <p className="text-[#1A1A1A] text-lg font-medium animate-pulse mt-2">
+                    Securing your exclusive rate...
+                </p>
             </div>
         </motion.div>
     )
@@ -353,10 +345,18 @@ export default function App() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-typography-primary pb-[100px]">
+        <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-typography-primary">
 
             {/* Blog Intro - Reduced Top Padding by 75% (12 -> 3) */}
             <article className="blog-intro-content max-w-[680px] mx-auto px-6 pt-3 pb-2">
+                <a
+                    href="/"
+                    aria-label="Back to homepage"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-[11px] font-bold text-[#757575] shadow-sm shadow-slate-900/5 backdrop-blur-md transition-all hover:border-slate-300 hover:bg-white hover:text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#135bec]/25 focus:ring-offset-2 active:scale-[0.98] mb-5"
+                >
+                    <ArrowLeft size={13} strokeWidth={2.5} aria-hidden="true" />
+                    Home
+                </a>
                 <span className="category-tag text-xs font-bold text-[#757575] uppercase tracking-widest mb-3 block">Bali, Indonesia</span>
                 <h1 className="blog-title text-3xl md:text-3xl font-bold text-[#1A1A1A] leading-[1.15] tracking-tight mb-6">
                     Escaping the Noise: My Secret Spots in Ubud
@@ -411,7 +411,6 @@ export default function App() {
                         <div class="bg-[#135bec] text-white px-4 py-2 rounded-full flex items-center gap-2 border-[3px] border-white shadow-sm">
                            <span class="text-sm font-extrabold">$${place.price}</span>
                         </div>
-                        <div class="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-[#135bec] -mt-[2px]"></div>
                       </div>
                     `
                                     : `
@@ -469,8 +468,8 @@ export default function App() {
                                         <button
                                             onClick={(e) => toggleDropdown('dates', e)}
                                             className={clsx(
-                                                "whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile hover:bg-gray-50",
-                                                openDropdown === 'dates' ? "bg-slate-100 text-[#1A1A1A] border-gray-300" : "bg-white text-[#1A1A1A] border-gray-200"
+                                                "whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
+                                                openDropdown === 'dates' ? "bg-slate-100 text-[#1A1A1A] border-gray-300" : "bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 hover:bg-[#1A1A1A]/10"
                                             )}
                                         >
                                             <Calendar size={10} className="text-slate-400" /> {dateRange} <ChevronDown size={10} className="text-[#1A1A1A]" />
@@ -482,8 +481,8 @@ export default function App() {
                                         <button
                                             onClick={(e) => toggleDropdown('guests', e)}
                                             className={clsx(
-                                                "whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile hover:bg-gray-50",
-                                                openDropdown === 'guests' ? "bg-slate-100 text-[#1A1A1A] border-gray-300" : "bg-white text-[#1A1A1A] border-gray-200"
+                                                "whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
+                                                openDropdown === 'guests' ? "bg-slate-100 text-[#1A1A1A] border-gray-300" : "bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 hover:bg-[#1A1A1A]/10"
                                             )}
                                         >
                                             <Users size={10} className="text-slate-400" /> {guestCount} <ChevronDown size={10} className="text-[#1A1A1A]" />
@@ -500,9 +499,8 @@ export default function App() {
                                         </button>
                                     </div>
 
-                                    {/* More Pill */}
                                     <div className="relative shrink-0 pr-4">
-                                        <button className="whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border bg-white text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-gray-50 shrink-0">
+                                        <button className="whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
                                             <SlidersHorizontal size={10} className="text-slate-400" /> More
                                         </button>
                                     </div>
@@ -533,48 +531,56 @@ export default function App() {
                     </div>
 
                     {/* CAROUSEL LAYER - 75% closer to edge (4 -> 1) */}
-                    <div className="absolute bottom-1 left-0 w-full z-[100] pb-2">
-                        {/* Premium Toggle Button - Tucked closer to cards */}
-                        <div className="flex justify-end px-6 -mb-3 relative z-[110]">
+                    <div className="absolute bottom-1 left-0 w-full z-[100] h-[340px] pb-2 pointer-events-none">
+                        <div 
+                            className="absolute left-0 top-[56px] z-[140] pointer-events-auto"
+                        >
                             <button
-                                onClick={() => setIsCardsVisible(!isCardsVisible)}
-                                className="w-9 h-9 rounded-full bg-white/95 backdrop-blur-md shadow-xl border border-white/50 flex items-center justify-center text-slate-600 active-scale transition-all hover:bg-white hover:text-[#135bec] group"
-                                title={isCardsVisible ? "Hide Stays" : "Show Stays"}
+                                onClick={() => setIsCardsVisible(open => !open)}
+                                className="h-8 px-3 flex items-center justify-center text-slate-800 bg-white/85 backdrop-blur-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border-y border-r border-white/80 rounded-r-[24px] active-scale transition-all hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/25 focus:ring-offset-2"
+                                title={isCardsVisible ? "Minimize visuals" : "Expand visuals"}
+                                aria-label="Toggle hotel visuals"
                             >
-                                {isCardsVisible ? (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="flex items-center gap-1"
-                                    >
-                                        <Hotel size={12} className="text-slate-400" />
-                                        <X size={12} className="text-slate-600" />
-                                    </motion.div>
-                                ) : (
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ duration: 0.4, type: 'spring', stiffness: 200 }}
-                                    >
-                                        <Eye size={14} className="text-[#135bec]" />
-                                    </motion.div>
-                                )}
+                                <AnimatePresence mode="wait">
+                                    {isCardsVisible ? (
+                                        <motion.div
+                                            key="close"
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                        >
+                                            <X size={16} strokeWidth={2.5} />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="open"
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                            className="flex items-center gap-1.5"
+                                        >
+                                            <Hotel size={15} strokeWidth={2} />
+                                            <Eye size={15} strokeWidth={2} />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </button>
                         </div>
 
                         <AnimatePresence>
                             {isCardsVisible && (
                                 <motion.div
-                                    initial={{ opacity: 0, y: 40, scale: 0.98 }}
+                                    id="hotel-cards-row"
+                                    initial={{ opacity: 0, y: 52, scale: 0.98 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 40, scale: 0.98 }}
-                                    transition={{ duration: 0.4, cubicBezier: [0.16, 1, 0.3, 1] }}
+                                    exit={{ opacity: 0, y: 52, scale: 0.98 }}
+                                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                                    className="absolute inset-0 pointer-events-auto"
                                 >
                                     <div
                                         ref={cardsContainerRef}
-                                        className="flex overflow-x-auto snap-x snap-mandatory px-4 gap-4 scrollbar-hide pb-2 items-end h-[340px] carousel-momentum"
-                                        style={{ scrollPaddingLeft: '17.5%' }}
+                                        className="flex overflow-x-auto snap-x snap-mandatory pl-11 pr-4 gap-4 scrollbar-hide pb-2 items-end h-full carousel-momentum"
+                                        style={{ scrollPaddingLeft: '2.75rem' }}
                                     >
                                         {ACCOMMODATIONS.map((place) => {
                                             const isActive = place.id === activeId;
@@ -682,9 +688,6 @@ export default function App() {
                         </AnimatePresence>
                     </div>
                 </div>
-
-                {/* Touch Indicator */}
-                <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-24 h-1 bg-gray-400/50 rounded-full z-[200] opacity-50 backdrop-blur-sm"></div>
             </div>
 
             {/* CONCIERGE OVERLAY */}
@@ -698,11 +701,26 @@ export default function App() {
             </AnimatePresence>
 
             {/* Footer Content */}
-            <div className="max-w-[680px] mx-auto px-6 pb-24 text-[17px] leading-[1.6] text-typography-primary">
+            <div className="max-w-[680px] mx-auto px-6 pb-[122px] text-[17px] leading-[1.6] text-typography-primary">
                 <h3 className="text-xl font-bold mb-3">Why this area matters</h3>
                 <p className="text-typography-secondary mb-6">
                     Staying in these specific coordinates puts you exactly 10 minutes from the Monkey Forest but far enough to avoid the tour bus crowds. It’s the sweet spot for digital nomads and peace-seekers alike.
                 </p>
+                <p className="text-typography-secondary mb-5">
+                    If you go, give yourself one slow morning with nowhere to be. Wake up before the scooters, follow the small roads until they turn to green, and let Ubud become quiet again in its own time. That is the version I keep coming back for.
+                </p>
+
+                <div className="flex flex-wrap gap-2 pt-2">
+                    {['Bali Travel', 'Ubud Guide', 'Boutique Stays', 'Rice Fields', 'Slow Travel'].map(tag => (
+                        <a
+                            key={tag}
+                            href="/"
+                            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-[#757575] hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition-colors"
+                        >
+                            #{tag}
+                        </a>
+                    ))}
+                </div>
             </div>
         </div>
     )
