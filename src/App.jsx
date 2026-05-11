@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { ACCOMMODATIONS } from './data'
-import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, ShieldCheck, Hotel, Eye, X } from 'lucide-react'
+import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, ShieldCheck, Hotel, Eye, EyeOff, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 
@@ -14,7 +14,7 @@ function MapController({ activeId, accommodations }) {
     return null;
 }
 
-const DateDropdown = ({ setRange, close }) => {
+const DateDropdown = ({ dateRange, setRange, close }) => {
     const months = ['FEB', 'MAR', 'APR', 'MAY', 'JUN'];
     const days = [
         { d: 24, day: 'FRI' }, { d: 25, day: 'SAT' }, { d: 26, day: 'SUN' },
@@ -27,35 +27,46 @@ const DateDropdown = ({ setRange, close }) => {
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="bg-white/80 backdrop-blur-[24px] p-4 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
+            className="bg-white p-4 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
         >
             <div className="flex justify-between items-center px-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Select Date</span>
                 <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-full">2026</span>
             </div>
 
-            <div className="flex gap-6 overflow-x-auto scrollbar-hide py-1 mask-linear-fade">
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide py-1">
                 {months.map((m, i) => (
-                    <button key={m} className={clsx("text-xs font-black tracking-widest shrink-0 transition-colors active-scale transition-tactile", i === 0 ? "text-slate-900" : "text-slate-300 hover:text-slate-500")}>
+                    <button 
+                        key={m} 
+                        onClick={() => setRange(m === 'FEB' ? 'Dates' : `${m} 2026`)}
+                        className={clsx(
+                            "text-xs font-bold tracking-widest shrink-0 transition-colors active-scale transition-tactile", 
+                            (dateRange.toUpperCase().includes(m) || (m === 'FEB' && dateRange === 'Dates')) ? "text-slate-900" : "text-slate-300 hover:text-slate-500"
+                        )}
+                    >
                         {m}
                     </button>
                 ))}
             </div>
 
             <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 snap-x">
-                {days.map((item, i) => (
-                    <button
-                        key={i}
-                        onClick={() => { setRange(`Feb ${item.d}`); close(); }}
-                        className={clsx(
-                            "w-12 h-16 shrink-0 rounded-2xl flex flex-col items-center justify-center gap-1 snap-center transition-all active-scale transition-tactile",
-                            i === 0 ? "bg-slate-900/60 text-white shadow-lg shadow-black/10 border border-white/15 backdrop-blur-md" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
-                        )}
-                    >
-                        <span className={clsx("text-[9px] font-bold", i === 0 ? "text-white/60" : "text-slate-400")}>{item.day}</span>
-                        <span className={clsx("text-base font-black leading-none", i === 0 ? "text-white" : "text-slate-900")}>{item.d}</span>
-                    </button>
-                ))}
+                {days.map((item, i) => {
+                    const label = `Feb ${item.d}`;
+                    const isSelected = dateRange === label;
+                    return (
+                        <button
+                            key={i}
+                            onClick={() => { setRange(label); close(); }}
+                            className={clsx(
+                                "w-12 h-16 shrink-0 rounded-2xl flex flex-col items-center justify-center gap-1 snap-center transition-all active-scale transition-tactile",
+                                isSelected ? "bg-transparent text-slate-900 shadow-sm shadow-slate-900/5 border border-slate-900/60" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                            )}
+                        >
+                            <span className={clsx("text-[9px] font-bold uppercase", isSelected ? "text-slate-500" : "text-slate-400")}>{item.day}</span>
+                            <span className={clsx("text-base font-bold leading-none", isSelected ? "text-slate-900" : "text-slate-900")}>{item.d}</span>
+                        </button>
+                    );
+                })}
             </div>
         </motion.div>
     );
@@ -65,14 +76,13 @@ const GuestDropdown = ({ count, setCount, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white/80 backdrop-blur-[24px] p-4 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-64 ring-1 ring-black/5"
+        className="bg-white p-4 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-64 ring-1 ring-black/5"
     >
         <div className="flex items-center justify-between bg-white/50 rounded-2xl p-2 mb-4">
             <button onClick={() => setCount(Math.max(1, count - 1))} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">-</button>
             <span className="text-sm font-bold text-slate-900">{count} Guests</span>
             <button onClick={() => setCount(count + 1)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">+</button>
         </div>
-        <button onClick={close} className="w-full py-3 bg-slate-900/70 text-white hover:bg-slate-900/80 rounded-2xl text-xs font-bold transition-all shadow-sm active-scale">Apply</button>
     </motion.div>
 )
 
@@ -81,77 +91,74 @@ const FilterDropdown = ({ selected, setSelected, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white/80 backdrop-blur-[24px] p-2 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-56 overflow-hidden ring-1 ring-black/5"
+        className="bg-white p-2 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-56 overflow-hidden ring-1 ring-black/5"
     >
         {['Top Rated', 'Rice Fields Nearby', 'Sea View Villas', 'Private Pool'].map(f => (
             <button
                 key={f}
-                onClick={() => { setSelected(f); close(); }}
+                onClick={() => { setSelected(f); }}
                 className={clsx(
                     "w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between active-scale transition-tactile mb-1 last:mb-0",
-                    selected === f ? "bg-slate-900/70 text-white shadow-sm" : "text-[#1A1A1A] hover:bg-white/50"
+                    selected === f ? "bg-slate-900/40 text-white shadow-md shadow-slate-900/10" : "text-[#1A1A1A] hover:bg-slate-50"
                 )}
             >
                 {f}
                 {selected === f && <Check size={12} className="text-white" />}
             </button>
         ))}
+        <div className="px-2 pt-1 pb-2">
+            <button onClick={close} className="w-full py-3 bg-transparent border border-slate-900/60 text-slate-900 hover:bg-slate-50 hover:border-slate-900/80 rounded-2xl text-xs font-bold transition-all active-scale">Apply Filter</button>
+        </div>
     </motion.div>
 )
 
 // Concierge Overlay Component
-function ConciergeOverlay({ hotel, onClose }) {
+const ConciergeOverlay = ({ hotel, onClose }) => {
     const [progress, setProgress] = useState(0);
-    const [displayedPrice, setDisplayedPrice] = useState(Math.floor(hotel.price * 0.85));
-    const [stage, setStage] = useState('concierge'); // 'concierge' | 'whiteout'
+    const [displayedPrice, setDisplayedPrice] = useState(0);
+    const [isComplete, setIsComplete] = useState(false);
+    const [stage, setStage] = useState('concierge');
 
     useEffect(() => {
-        // Animation sequence
-        const duration = 2500;
+        const duration = 1760; 
         const startTime = Date.now();
-        const startPrice = Math.floor(hotel.price * 0.85);
 
-        const interval = setInterval(() => {
-            const elapsed = Date.now() - startTime;
+        const animate = () => {
+            const now = Date.now();
+            const elapsed = now - startTime;
             const p = Math.min(elapsed / duration, 1);
-
-            // Progress bar
+            
+            // Staged easing: cubic ease out
+            const easedP = 1 - Math.pow(1 - p, 3);
+            
             setProgress(p * 100);
+            setDisplayedPrice(Math.round(easedP * hotel.price));
 
-            // Price rolling
             if (p < 1) {
-                // Random jumping numbers that get closer to target
-                const noise = (Math.random() - 0.5) * 50 * (1 - p);
-                const currentFn = startPrice + (hotel.price - startPrice) * p;
-                setDisplayedPrice(Math.floor(currentFn + noise));
+                requestAnimationFrame(animate);
             } else {
+                setProgress(100);
                 setDisplayedPrice(hotel.price);
-                clearInterval(interval);
-                // Trigger Whiteout
-                setTimeout(() => setStage('whiteout'), 200);
+                setIsComplete(true);
+                setTimeout(() => setStage('redirect'), 800);
             }
-        }, 30);
+        };
 
-        return () => clearInterval(interval);
+        requestAnimationFrame(animate);
     }, [hotel.price]);
 
-    // Handle Whiteout logic
     useEffect(() => {
-        if (stage === 'whiteout') {
-            const timer = setTimeout(() => {
-                onClose();
-            }, 4500);
+        if (stage === 'redirect') {
+            const timer = setTimeout(onClose, 4000);
             return () => clearTimeout(timer);
         }
     }, [stage, onClose]);
 
-    // Render Whiteout
-    if (stage === 'whiteout') {
+    if (stage === 'redirect') {
         return (
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
                 className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center font-sans"
             >
                 <motion.div
@@ -160,26 +167,43 @@ function ConciergeOverlay({ hotel, onClose }) {
                     transition={{ delay: 0.2 }}
                     className="flex flex-col items-center"
                 >
-                    {/* Placeholder Logo Text if no asset */}
-                    <h1 className="text-4xl font-black text-[#003580] tracking-tighter mb-4">Booking.com</h1>
-                    <p className="text-[#1A1A1A] text-lg font-medium animate-pulse">Opening Booking.com in a new tab...</p>
+                    <h1 className="text-4xl font-bold text-[#003580] tracking-tight mb-4">booking.com</h1>
+                    <p className="text-[#1A1A1A] text-lg font-medium animate-pulse">Opening a new tab...</p>
                 </motion.div>
             </motion.div>
         )
     }
 
-    // Render Concierge
     return (
-        <motion.div
+        <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-xl backdrop-saturate-150 flex flex-col items-center justify-center font-sans p-6 border border-black/5"
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] bg-white/90 backdrop-blur-[20px] flex flex-col items-center justify-center p-8 text-center"
         >
-            <div className="flex flex-col items-center max-w-sm w-full text-center">
-                {/* Success Icon Only */}
-                <div className="w-12 h-12 bg-white text-zinc-900 rounded-full border border-black/5 shadow-sm flex items-center justify-center mb-10">
-                    <Check size={16} strokeWidth={3.5} />
+            <div className="max-w-md w-full">
+                {/* Success Icon - Self-drawing SVG */}
+                <div className="mb-10 relative">
+                    <div className="w-20 h-20 flex items-center justify-center mx-auto">
+                        <motion.svg 
+                            viewBox="0 0 24 24" 
+                            className="w-12 h-12 text-[#003580]"
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="3" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                        >
+                            {isComplete && (
+                                <motion.path 
+                                    d="M20 6L9 17l-5-5"
+                                    initial={{ pathLength: 0 }}
+                                    animate={{ pathLength: 1 }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                />
+                            )}
+                        </motion.svg>
+                    </div>
                 </div>
 
                 {/* Value Stack */}
@@ -188,7 +212,9 @@ function ConciergeOverlay({ hotel, onClose }) {
                         <ShieldCheck size={12} strokeWidth={2.5} />
                         <span className="text-[10px] font-bold uppercase tracking-wider">Price Matched</span>
                     </div>
-                    <span className="text-6xl font-normal text-zinc-900 tabular-nums tracking-tighter font-lora">
+                    <span 
+                        className="text-6xl font-normal text-zinc-900 tabular-nums tracking-tighter font-lora"
+                    >
                         ${displayedPrice}
                     </span>
                 </div>
@@ -239,8 +265,8 @@ export default function App() {
     // Dropdown States
     const [openDropdown, setOpenDropdown] = useState(null); // 'dates', 'guests', 'filters'
     const [dropdownLeft, setDropdownLeft] = useState(0);
-    const [dateRange, setDateRange] = useState('Dates');
-    const [guestCount, setGuestCount] = useState(2);
+    const [dateRange, setDateRange] = useState('May 11');
+    const [guestCount, setGuestCount] = useState(1);
     const [selectedFilter, setSelectedFilter] = useState('Top Rated');
     const [isCardsVisible, setIsCardsVisible] = useState(true);
 
@@ -252,19 +278,18 @@ export default function App() {
                 const rect = event.currentTarget.getBoundingClientRect();
                 const dockRect = dropdownRef.current?.getBoundingClientRect();
                 if (dockRect) {
-                    // Precision alignment: Get the relative X position of the button's left edge
-                    // We subtract 48 to roughly center it or at least keep it within the dock visual
-                    // But to be "right under", we'll match the left edge and just nudge slightly
-                    let left = rect.left - dockRect.left;
-
-                    // Safety: Don't let it overflow the right side of the dock
-                    // Dock width is usually around 95% of viewport
-                    const dropdownWidth = 280; // approx w-72
+                    // Determine dropdown width based on name
+                    const widths = { dates: 288, guests: 256, filters: 224 };
+                    const dropdownWidth = widths[name] || 280;
+                    
+                    // Calculate centered position relative to the clicked button
+                    let left = (rect.left + rect.width / 2) - dockRect.left - (dropdownWidth / 2);
+                    
+                    // Clamp to dock boundaries (8px padding)
                     const dockWidth = dockRect.width;
-                    if (left + dropdownWidth > dockWidth) {
-                        left = dockWidth - dropdownWidth - 8;
-                    }
-                    setDropdownLeft(Math.max(8, left));
+                    left = Math.max(8, Math.min(left, dockWidth - dropdownWidth - 8));
+                    
+                    setDropdownLeft(left);
                 }
             }
             setOpenDropdown(name);
@@ -290,15 +315,13 @@ export default function App() {
     const cardRefs = useRef({});
     const isProgrammaticScroll = useRef(false);
 
-    // 1. Scroll-Sync: Observer to detect which card is centered -> Update Active Pin
+    // 1. Scroll-Sync: Observer
     useEffect(() => {
         const container = cardsContainerRef.current;
         if (!container) return;
 
         const observer = new IntersectionObserver((entries) => {
-            // Skip observer updates if we are scrolling programmatically (from pin click)
             if (isProgrammaticScroll.current) return;
-
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     const id = Number(entry.target.dataset.id);
@@ -316,13 +339,12 @@ export default function App() {
 
         return () => observer.disconnect();
     }, []);
-
-    // 2. Map Pin Click -> Scroll Card into View
+    // 2. Map Pin Click
     const handlePinClick = (id) => {
+        setActiveId(id);
         const card = cardRefs.current[id];
         if (card && cardsContainerRef.current) {
             isProgrammaticScroll.current = true;
-            setActiveId(id);
 
             card.scrollIntoView({
                 behavior: 'smooth',
@@ -330,7 +352,6 @@ export default function App() {
                 block: 'nearest'
             });
 
-            // Reset the lock after scrolling finishes (approximate)
             setTimeout(() => {
                 isProgrammaticScroll.current = false;
             }, 800);
@@ -340,14 +361,12 @@ export default function App() {
     const handleBook = (e, id) => {
         e.stopPropagation();
         if (bookingState !== 'idle') return;
-
         setBookingState('concierge');
     };
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-typography-primary">
 
-            {/* Blog Intro - Reduced Top Padding by 75% (12 -> 3) */}
             <article className="blog-intro-content max-w-[680px] mx-auto px-6 pt-3 pb-2">
                 <a
                     href="/"
@@ -381,16 +400,14 @@ export default function App() {
                 </div>
             </article>
 
-            {/* IMMERSIVE WIDGET CONTAINER - Reduced Bottom Margin by 75% (20 -> 5) */}
             <div className="w-full max-w-[680px] mx-auto px-4 mb-5 isolate">
-                <div className="w-full h-[85vh] md:h-[850px] bg-slate-100 md:rounded-[2.5rem] overflow-hidden shadow-2xl relative md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
+                <div className="w-full h-[700px] md:h-[850px] bg-slate-100 md:rounded-[2.5rem] overflow-hidden shadow-[0_16px_32px_rgba(0,0,0,0.12)] relative md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
 
-                    {/* MAP LAYER - ZOOM 10 */}
                     <div className="absolute inset-0 z-0">
                         <MapContainer
                             center={[-8.45, 115.26]}
                             zoom={10}
-                            zoomControl={false} // Custom control used instead
+                            zoomControl={false}
                             scrollWheelZoom={true}
                             className="h-full w-full outline-none bg-[#e5e7eb]"
                             attributionControl={false}
@@ -402,33 +419,22 @@ export default function App() {
 
                             {ACCOMMODATIONS.map((place) => {
                                 const isActive = place.id === activeId;
-
-                                // MARKER HTML: Blue Brand Color
-                                const iconHtml = isActive
-                                    ? `
-                      <div class="relative flex flex-col items-center drop-shadow-xl transition-all duration-300 scale-110 z-[9999]">
-                        <div class="marker-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-full z-[-1]"></div>
-                        <div class="bg-[#135bec] text-white px-4 py-2 rounded-full flex items-center gap-2 border-[3px] border-white shadow-sm">
-                           <span class="text-sm font-extrabold">$${place.price}</span>
-                        </div>
-                      </div>
-                    `
-                                    : `
-                      <div class="bg-white hover:bg-gray-50 text-slate-900 px-3 py-1.5 rounded-full shadow-lg border border-gray-100 font-bold text-xs transition-transform hover:scale-110 flex items-center justify-center min-w-[3rem]">
-                        $${place.price}
-                      </div>
-                    `;
-
                                 const icon = L.divIcon({
                                     className: 'custom-marker-div',
-                                    html: iconHtml,
+                                    html: `
+                                        <div class="group relative flex flex-col items-center">
+                                            <div class="bg-white px-3 py-1.5 rounded-full shadow-lg border border-gray-100 transition-all duration-300 transform group-hover:scale-110 group-hover:shadow-yellow-400/20 active:scale-95 active:shadow-[0_0_15px_rgba(250,204,21,0.5)] ${isActive ? 'ring-4 ring-yellow-400/20 scale-110 border-yellow-200/40 shadow-[0_0_30px_rgba(250,204,21,0.5)]' : ''}">
+                                                <span class="text-[11px] font-bold text-gray-900">$${place.price}</span>
+                                            </div>
+                                        </div>
+                                    `,
                                     iconSize: [60, 40],
                                     iconAnchor: [30, 42]
                                 });
 
                                 return (
                                     <Marker
-                                        key={place.id}
+                                        key={`${place.id}-${isActive}`}
                                         position={[place.lat, place.lng]}
                                         icon={icon}
                                         eventHandlers={{
@@ -440,14 +446,10 @@ export default function App() {
                         </MapContainer>
                     </div>
 
-                    {/* UNIFIED TOP UI (Floating Dock) - 75% closer to edge (6 -> 1.5) */}
                     <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-[95%] z-[500] pointer-events-none">
                         <div className="bg-white/95 backdrop-blur-xl rounded-[24px] shadow-xl border border-white/50 p-2 pointer-events-auto relative" ref={dropdownRef}>
-
-                            {/* Unified Single Row */}
-                            <div className="flex items-center gap-3 px-2 py-1.5">
-                                {/* Location (Input) - Condensing for Single Line */}
-                                <div className="flex items-center gap-1.5 shrink-0 border-r border-gray-100 pr-2 max-w-[120px]">
+                            <div className="flex items-center gap-1.5 px-1 py-1.5">
+                                <div className="flex items-center gap-1 shrink-0 border-r border-gray-100 pr-1 max-w-[110px]">
                                     <button className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
                                         <MapPin size={12} />
                                     </button>
@@ -461,9 +463,7 @@ export default function App() {
                                     </div>
                                 </div>
 
-                                {/* Filters (Scrollable, Tactile Row) */}
-                                <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-0.5 carousel-momentum mask-linear-fade">
-                                    {/* Dates */}
+                                <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-0.5 carousel-momentum">
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('dates', e)}
@@ -476,7 +476,6 @@ export default function App() {
                                         </button>
                                     </div>
 
-                                    {/* Guests */}
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('guests', e)}
@@ -489,7 +488,6 @@ export default function App() {
                                         </button>
                                     </div>
 
-                                    {/* Filters */}
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('filters', e)}
@@ -507,7 +505,6 @@ export default function App() {
                                 </div>
                             </div>
 
-                            {/* FLOATING DROPDOWN LAYER (Absolute positioned, no height change) */}
                             <AnimatePresence>
                                 {openDropdown && (
                                     <motion.div
@@ -520,7 +517,7 @@ export default function App() {
                                             className="relative pointer-events-auto origin-top"
                                             style={{ left: `${dropdownLeft}px` }}
                                         >
-                                            {openDropdown === 'dates' && <DateDropdown setRange={setDateRange} close={() => setOpenDropdown(null)} />}
+                                            {openDropdown === 'dates' && <DateDropdown dateRange={dateRange} setRange={setDateRange} close={() => setOpenDropdown(null)} />}
                                             {openDropdown === 'guests' && <GuestDropdown count={guestCount} setCount={setGuestCount} close={() => setOpenDropdown(null)} />}
                                             {openDropdown === 'filters' && <FilterDropdown selected={selectedFilter} setSelected={setSelectedFilter} close={() => setOpenDropdown(null)} />}
                                         </div>
@@ -530,14 +527,13 @@ export default function App() {
                         </div>
                     </div>
 
-                    {/* CAROUSEL LAYER - 75% closer to edge (4 -> 1) */}
                     <div className="absolute bottom-1 left-0 w-full z-[100] h-[340px] pb-2 pointer-events-none">
                         <div 
-                            className="absolute left-0 top-[56px] z-[140] pointer-events-auto"
+                            className="absolute left-0 bottom-[24px] z-[500] pointer-events-auto"
                         >
                             <button
                                 onClick={() => setIsCardsVisible(open => !open)}
-                                className="h-8 px-3 flex items-center justify-center text-slate-800 bg-white/85 backdrop-blur-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border-y border-r border-white/80 rounded-r-[24px] active-scale transition-all hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/25 focus:ring-offset-2"
+                                className="h-8 px-3 flex items-center justify-center text-slate-800 bg-white/85 backdrop-blur-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border-y border-r border-white/80 rounded-r-[24px] active-scale transition-all hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#135bec]/25"
                                 title={isCardsVisible ? "Minimize visuals" : "Expand visuals"}
                                 aria-label="Toggle hotel visuals"
                             >
@@ -549,7 +545,7 @@ export default function App() {
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.8 }}
                                         >
-                                            <X size={16} strokeWidth={2.5} />
+                                            <EyeOff size={16} strokeWidth={2.5} />
                                         </motion.div>
                                     ) : (
                                         <motion.div
@@ -590,58 +586,46 @@ export default function App() {
                                                     ref={el => cardRefs.current[place.id] = el}
                                                     data-id={place.id}
                                                     className={clsx(
-                                                        "snap-center shrink-0 w-[65%] transition-all duration-300 relative group",
+                                                        "snap-center shrink-0 w-[72%] transition-all duration-300 relative group",
                                                         isActive ? "scale-100 z-10" : "scale-95 z-0"
                                                     )}
                                                     onClick={() => {
                                                         if (!isActive) handlePinClick(place.id);
                                                     }}
                                                 >
-                                                    {/* Card Content - WHITE FROSTED GLASS */}
                                                     <div className={clsx(
                                                         "relative rounded-[24px] overflow-hidden backdrop-blur-[20px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-white/80 p-2.5 flex flex-col gap-2 transition-colors duration-500",
                                                         "bg-white/85"
                                                     )}>
-                                                        {/* Progress Shimmer */}
                                                         {isActive && bookingState !== 'idle' && (
                                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#135bec] to-transparent animate-pulse opacity-80 z-50"></div>
                                                         )}
 
-                                                        {/* Image */}
                                                         <div className="h-32 w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
                                                             <img src={place.image} alt={place.name} className="w-full h-full object-cover transform decoration-0 group-hover:scale-105 transition-transform duration-700" />
                                                             <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                                                                 <Star size={9} className="text-yellow-500" fill="currentColor" />
                                                                 <span className="text-[9px] font-bold text-slate-900">{place.rating}</span>
                                                             </div>
-
-                                                            {place.tag && (
-                                                                <div className={clsx(
-                                                                    "absolute bottom-2 left-2 -rotate-6 px-2.5 py-1 shadow-lg transform origin-bottom-left z-20",
-                                                                    place.tagClass || "bg-yellow-400 text-black"
-                                                                )}>
-                                                                    <span style={{ fontFamily: 'Caveat, cursive' }} className="text-xs font-bold leading-none block pt-0.5">{place.tag}</span>
-                                                                </div>
-                                                            )}
                                                         </div>
 
-                                                        {/* Info */}
                                                         <div className="px-1 pb-0.5">
-                                                            <div className="flex justify-between items-start mb-2">
+                                                            <div className="flex justify-between items-baseline mb-2">
                                                                 <div>
-                                                                    <h3 className="text-sm font-bold text-slate-900 leading-tight tracking-tight line-clamp-1">{place.name}</h3>
-                                                                    <p className="text-[10px] text-slate-500 flex items-center mt-0.5 font-medium line-clamp-1">
+                                                                    <h3 className="text-sm font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
+                                                                    <p className="text-[10px] text-slate-500 flex items-center mt-0.5 font-medium line-clamp-2">
                                                                         <MapPin size={10} className="mr-0.5 text-slate-400" /> {place.distance}
                                                                     </p>
                                                                 </div>
-                                                                <div className="text-right shrink-0">
-                                                                    <span className="text-[10px] font-bold text-slate-500">from </span>
-                                                                    <span className="text-sm font-black text-[#135bec]">${place.price}</span>
-                                                                    <span className="text-[10px] font-bold text-slate-500">/night</span>
+                                                                <div className="text-right shrink-0 flex flex-col items-end">
+                                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">from</span>
+                                                                    <div className="flex items-baseline gap-0.5">
+                                                                        <span className="text-sm font-black text-[#135bec] leading-none">${place.price}</span>
+                                                                        <span className="text-[10px] font-bold text-slate-400 leading-none">/night</span>
+                                                                    </div>
                                                                 </div>
                                                             </div>
 
-                                                            {/* Booking Button */}
                                                             <div className="flex flex-col items-center">
                                                                 <button
                                                                     onClick={(e) => handleBook(e, place.id)}
