@@ -239,7 +239,7 @@ function CustomZoomControl() {
                 onClick={() => map.zoomOut()}
                 className="w-10 h-10 bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-white/50 flex items-center justify-center text-slate-700 active:scale-95 transition-all hover:bg-white"
             >
-                <div className="text-xl leading-none font-light pb-1">-</div>
+                <div className="text-2xl leading-none font-light pb-1">-</div>
             </button>
         </div>
     )
@@ -450,7 +450,7 @@ export default function App() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-1.5 carousel-momentum [mask-image:linear-gradient(to_right,black_85%,transparent)]">
+                                <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-1.5 carousel-momentum [mask-image:linear-gradient(to_right,black_92%,transparent)]">
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('dates', e)}
@@ -631,7 +631,7 @@ export default function App() {
                                                                     disabled={bookingState !== 'idle' || !isActive}
                                                                     style={{ borderRadius: '32px' }}
                                                                     className={clsx(
-                                                                        "w-full py-2 text-[11px] md:text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
+                                                                        "w-full py-2 md:py-2.5 text-[11px] md:text-[13px] font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
                                                                         bookingState === 'idle'
                                                                             ? (isActive ? "bg-[#135bec] hover:bg-blue-600 text-white shadow-blue-500/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400")
                                                                             : "bg-[#135bec] text-white cursor-wait"
@@ -660,7 +660,7 @@ export default function App() {
                                                                         )}
                                                                     </AnimatePresence>
                                                                 </button>
-                                                                <p className="text-[10px] md:text-[11px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
+                                                                <p className="text-[10px] md:text-[12px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
                                                                     Secure booking. Free cancellation.
                                                                 </p>
                                                             </div>
