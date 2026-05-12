@@ -27,7 +27,7 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="bg-white/90 backdrop-blur-xl p-6 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
+            className="bg-white/90 backdrop-blur-xl p-5 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
         >
             <div className="flex justify-between items-center px-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Select Date</span>
@@ -76,7 +76,7 @@ const GuestDropdown = ({ count, setCount, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white/90 backdrop-blur-xl p-6 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-64 ring-1 ring-black/5"
+        className="bg-white/90 backdrop-blur-xl p-5 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-64 ring-1 ring-black/5"
     >
         <div className="flex items-center justify-between bg-white/50 rounded-2xl p-2">
             <button onClick={() => setCount(Math.max(1, count - 1))} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">-</button>
@@ -99,7 +99,7 @@ const FilterDropdown = ({ selected, setSelected, close }) => (
                 onClick={() => { setSelected(f); }}
                 className={clsx(
                     "w-full text-left px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center justify-between active-scale transition-tactile mb-1 last:mb-0",
-                    selected === f ? "bg-slate-900/40 text-white shadow-md shadow-slate-900/10" : "text-[#1A1A1A] hover:bg-slate-50"
+                    selected === f ? "bg-[#135bec] text-white shadow-md shadow-blue-500/10" : "text-[#1A1A1A] hover:bg-slate-50"
                 )}
             >
                 {f}
@@ -140,7 +140,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 setProgress(100);
                 setDisplayedPrice(hotel.price);
                 setIsComplete(true);
-                setTimeout(() => setStage('redirect'), 400);
+                setTimeout(() => setStage('redirect'), 1400);
             }
         };
 
@@ -386,8 +386,11 @@ export default function App() {
                     <p className="mb-5">
                         Ubud has changed a lot in the last decade, but if you know where to look, you can still find that magical silence where the only sound is the rustling of coconut palms.
                     </p>
+                    <p className="mb-4">
+                        I've stayed in places that are impossible to forget — they make me want to go back again and again.
+                    </p>
                     <p>
-                        I’ve spent the last month scouring the rice paddies for the most serene, high-design stays. Below is my curated map of personal favorites.
+                        These coordinates are more than just a map; they are the fragments of a Bali that still knows how to be quiet.
                     </p>
                 </div>
             </article>
@@ -397,8 +400,8 @@ export default function App() {
 
                     <div className="absolute inset-0 z-0">
                         <MapContainer
-                            center={[-8.45, 115.26]}
-                            zoom={10}
+                            center={[-8.25, 115.1]}
+                            zoom={9}
                             zoomControl={false}
                             scrollWheelZoom={true}
                             className="h-full w-full outline-none bg-white"
@@ -439,34 +442,33 @@ export default function App() {
                     </div>
 
                     <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-[95%] z-[500] pointer-events-none">
-                        <div className="bg-white/95 backdrop-blur-xl rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 py-1 px-2 pointer-events-auto relative" ref={dropdownRef}>
-                            <div className="flex items-center gap-1.5">
-                                <div className="flex items-center gap-1 shrink-0 border-r border-white/60 pr-0.5 max-w-[110px]">
+                        <div className="bg-white/90 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border-[3px] border-white/80 p-1 pl-3 pr-3 flex items-center pointer-events-auto overflow-hidden" ref={dropdownRef}>
+                            <div className="flex items-center gap-3 w-full">
+                                <div className="flex items-center gap-1 shrink-0 border-r border-slate-200 pr-3 max-w-[110px]">
                                     <button className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
                                         <MapPin size={12} />
                                     </button>
                                     <div className="flex flex-col justify-center min-w-0 gap-0.5">
                                         <label className="text-[11px] font-black text-[#007E8F] uppercase tracking-wider leading-none truncate">Let's go to</label>
-                                        <div className="flex items-center gap-1">
+                                        <div className="flex items-center">
                                             <input
                                                 type="text"
                                                 defaultValue="Ubud, Bali"
                                                 className="text-[11px] font-bold text-slate-900 leading-tight bg-transparent border-none p-0 w-full focus:ring-0 placeholder-gray-400 outline-none truncate"
                                             />
-                                            <Pencil size={9} className="text-slate-400 shrink-0" />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-1.5 carousel-momentum [mask-image:linear-gradient(to_right,black_92%,transparent)]">
+                                <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-1.5 carousel-momentum [mask-image:linear-gradient(to_right,black_85%,transparent)]">
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('dates', e)}
                                             aria-label="Select dates"
                                             aria-expanded={openDropdown === 'dates'}
                                             className={clsx(
-                                                "whitespace-nowrap px-2.5 py-2.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
-                                                openDropdown === 'dates' ? "bg-white/80 backdrop-blur-md text-[#1A1A1A] border-slate-300" : "bg-white/40 backdrop-blur-md text-[#1A1A1A] border-slate-200 hover:bg-white/60"
+                                                "whitespace-nowrap px-2 py-2.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
+                                                openDropdown === 'dates' ? "bg-white/80 backdrop-blur-md text-[#1A1A1A] border-slate-300" : "bg-white/70 backdrop-blur-md text-[#1A1A1A] border-slate-200 hover:bg-white/80"
                                             )}
                                         >
                                             <Calendar size={10} className="text-slate-600" aria-hidden="true" /> {dateRange} <ChevronDown size={10} className="text-[#1A1A1A]" />
@@ -479,8 +481,8 @@ export default function App() {
                                             aria-label="Select guests"
                                             aria-expanded={openDropdown === 'guests'}
                                             className={clsx(
-                                                "whitespace-nowrap px-2.5 py-2.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
-                                                openDropdown === 'guests' ? "bg-white/80 backdrop-blur-md text-[#1A1A1A] border-slate-300" : "bg-white/40 backdrop-blur-md text-[#1A1A1A] border-slate-200 hover:bg-white/60"
+                                                "whitespace-nowrap px-2 py-2.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
+                                                openDropdown === 'guests' ? "bg-white/80 backdrop-blur-md text-[#1A1A1A] border-slate-300" : "bg-white/70 backdrop-blur-md text-[#1A1A1A] border-slate-200 hover:bg-white/80"
                                             )}
                                         >
                                             <Users size={10} className="text-slate-600" aria-hidden="true" /> {guestCount} <ChevronDown size={10} className="text-[#1A1A1A]" />
@@ -490,14 +492,14 @@ export default function App() {
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('filters', e)}
-                                            className="whitespace-nowrap bg-slate-900/50 text-white px-2.5 py-2.5 rounded-full text-[10px] font-bold border border-white/10 backdrop-blur-md flex items-center gap-1 active-scale transition-tactile"
+                                            className="whitespace-nowrap bg-slate-900/50 text-white px-2 py-2.5 rounded-full text-[10px] font-bold border border-white/10 backdrop-blur-md flex items-center gap-1 active-scale transition-tactile"
                                         >
                                             <Star size={10} fill="currentColor" className="text-white" /> {selectedFilter} <ChevronDown size={10} className="text-white" />
                                         </button>
                                     </div>
 
                                     <div className="relative shrink-0 pr-12">
-                                        <button className="whitespace-nowrap px-2.5 py-2.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
+                                        <button className="whitespace-nowrap px-2 py-2.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
                                             <SlidersHorizontal size={10} className="text-slate-400" /> More
                                         </button>
                                     </div>
@@ -570,11 +572,11 @@ export default function App() {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 52, scale: 0.98 }}
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="absolute bottom-0 left-0 right-0 pointer-events-auto h-[295px]"
+                                    className="absolute bottom-1.5 left-0 right-0 pointer-events-auto h-[315px] pb-[4px]"
                                 >
                                     <div
                                         ref={cardsContainerRef}
-                                        className="flex overflow-x-auto snap-x snap-mandatory pl-11 pr-4 gap-6 scrollbar-hide items-stretch h-full carousel-momentum"
+                                        className="flex gap-3.5 overflow-x-auto snap-x snap-mandatory pl-11 pr-4 scrollbar-hide items-stretch h-full carousel-momentum"
                                         style={{ scrollPaddingLeft: '2.75rem' }}
                                     >
                                         {ACCOMMODATIONS.map((place) => {
@@ -594,7 +596,7 @@ export default function App() {
                                                     }}
                                                 >
                                                     <div className={clsx(
-                                                        "relative h-full rounded-[24px] overflow-hidden border border-white/80 p-2.5 flex flex-col transition-all duration-500",
+                                                        "relative h-full rounded-[24px] overflow-hidden border border-white/80 pt-[7.5px] px-[7.5px] pb-[4px] flex flex-col transition-all duration-500",
                                                         isActive ? "shadow-[0_12px_32px_rgba(0,0,0,0.18)] bg-white" : "shadow-[0_8px_24px_rgba(0,0,0,0.12)] bg-white"
                                                     )}>
                                                         {isActive && bookingState !== 'idle' && (
@@ -619,8 +621,8 @@ export default function App() {
                                                                     "group-hover:scale-[1.18] active:scale-[1.25] active:brightness-110"
                                                                 )} 
                                                             />
-                                                            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm z-10">
-                                                                <Star size={9} className="text-amber-500" fill="currentColor" />
+                                                            <div className="absolute top-2 left-2 bg-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm z-10">
+                                                                <Star size={10} className="text-yellow-500 fill-yellow-500" />
                                                                 <span className="text-[11px] font-bold text-slate-900">{place.rating}</span>
                                                             </div>
                                                             {place.tag && (
@@ -635,7 +637,7 @@ export default function App() {
                                                             )}
                                                         </div>
 
-                                                        <div className="flex-grow flex flex-col justify-start pt-1.5 pb-0 px-0.5">
+                                                        <div className="flex flex-col justify-start pt-2.5 pb-0 px-0.5">
                                                             <div className="mb-0">
                                                                 <h3 className="text-[15px] md:text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
                                                             </div>
@@ -650,13 +652,13 @@ export default function App() {
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex flex-col items-center mt-auto">
+                                                            <div className="flex flex-col items-center pt-3.5">
                                                                 <button
                                                                     onClick={(e) => handleBook(e, place.id)}
                                                                     disabled={bookingState !== 'idle' || !isActive}
                                                                     style={{ borderRadius: '32px' }}
                                                                     className={clsx(
-                                                                        "w-full py-2 md:py-2.5 text-[11px] md:text-[13px] font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
+                                                                        "w-full py-2 md:py-2.5 text-[12px] min-[390px]:text-[14px] font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
                                                                         bookingState === 'idle'
                                                                             ? (isActive ? "bg-[#135bec] hover:bg-blue-600 text-white shadow-blue-500/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400")
                                                                             : "bg-[#135bec] text-white cursor-wait"
@@ -685,7 +687,7 @@ export default function App() {
                                                                         )}
                                                                     </AnimatePresence>
                                                                 </button>
-                                                                <p className="text-[10px] md:text-[12px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
+                                                                <p className="text-[10px] min-[390px]:text-[12px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
                                                                     Free cancellation.
                                                                 </p>
                                                             </div>
@@ -713,7 +715,7 @@ export default function App() {
             </AnimatePresence>
 
             {/* Footer Content */}
-            <div className="max-w-[680px] mx-auto px-[18px] pb-[122px] text-[17px] leading-[1.6] text-typography-primary">
+            <div className="max-w-[680px] mx-auto px-[18px] pb-[61px] text-[17px] leading-[1.6] text-typography-primary">
                 <h3 className="text-xl font-bold mb-3">Why this area matters</h3>
                 <p className="text-typography-secondary mb-6">
                     Staying in these specific coordinates puts you exactly 10 minutes from the Monkey Forest but far enough to avoid the tour bus crowds. It’s the sweet spot for digital nomads and peace-seekers alike.

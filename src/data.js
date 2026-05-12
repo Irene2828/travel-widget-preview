@@ -5,19 +5,6 @@ import image4 from './image4.jpeg';
 
 export const ACCOMMODATIONS = [
     {
-        id: 1,
-        name: "Sanctuary Cove Resort",
-        location: "Ubud, Bali",
-        price: 350,
-        rating: 4.9,
-        distance: "1.2 km",
-        image: image1,
-        lat: -8.5069,
-        lng: 115.2625,
-        tag: "Traveller's Favorite",
-        tagClass: "bg-yellow-400 text-black"
-    },
-    {
         id: 2,
         name: "Bamboo Haven Villa",
         location: "Tegallalang",
@@ -54,7 +41,7 @@ export const ACCOMMODATIONS = [
         lat: -8.3846,
         lng: 115.2863,
         tag: "New Concept",
-        tagClass: "bg-indigo-600 text-white"
+        tagClass: "bg-yellow-400 text-black"
     },
     {
         id: 5,
