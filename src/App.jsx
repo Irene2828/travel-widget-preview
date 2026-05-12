@@ -140,7 +140,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 setProgress(100);
                 setDisplayedPrice(hotel.price);
                 setIsComplete(true);
-                setTimeout(() => setStage('redirect'), 800);
+                setTimeout(() => setStage('redirect'), 1200);
             }
         };
 
@@ -167,8 +167,8 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                     transition={{ delay: 0.2 }}
                     className="flex flex-col items-center"
                 >
-                    <h1 className="text-4xl font-bold text-[#003580] tracking-tight mb-4">booking.com</h1>
-                    <p className="text-[#1A1A1A] text-lg font-medium animate-pulse">Opening a new tab...</p>
+                    <p className="text-[#1A1A1A] text-lg font-medium animate-pulse mb-2">Opening...</p>
+                    <h1 className="text-4xl font-bold text-[#003580] tracking-tight">booking.com</h1>
                 </motion.div>
             </motion.div>
         )
@@ -183,11 +183,11 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
         >
             <div className="max-w-md w-full">
                 {/* Success Icon - Self-drawing SVG */}
-                <div className="mb-0 relative">
+                <div className="mb-8 relative">
                     <div className="w-20 h-20 flex items-center justify-center mx-auto">
                         <motion.svg 
                             viewBox="0 0 24 24" 
-                            className="w-12 h-12 text-lime-600"
+                            className="w-12 h-12 text-lime-500"
                             fill="none" 
                             stroke="currentColor" 
                             strokeWidth="3" 
@@ -199,34 +199,15 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                                     d="M20 6L9 17l-5-5"
                                     initial={{ pathLength: 0 }}
                                     animate={{ pathLength: 1 }}
-                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    transition={{ duration: 0.5, ease: "easeOut" }}
                                 />
                             )}
                         </motion.svg>
                     </div>
                 </div>
 
-                {/* Value Stack */}
-                <div className="flex flex-col items-center gap-3 mb-8 -mt-2">
-                    {isComplete && (
-                        <motion.div 
-                            initial={{ opacity: 0, y: 5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-center gap-1 bg-lime-200 text-lime-900 px-3 pt-1 pb-1.5 rounded-full shadow-sm"
-                        >
-                            <Check size={12} strokeWidth={2.5} className="text-lime-900" />
-                            <span className="text-[10px] font-bold uppercase tracking-wider">Locked the price!</span>
-                        </motion.div>
-                    )}
-                    <span 
-                        className="text-6xl font-normal text-zinc-900 tabular-nums tracking-tighter font-lora"
-                    >
-                        ${displayedPrice}
-                    </span>
-                </div>
-
                 {/* Precision Divider */}
-                <div className="w-full bg-zinc-100 h-1.5 rounded-full mb-10 relative overflow-hidden">
+                <div className="w-full bg-zinc-100 h-1.5 rounded-full mb-6 relative overflow-hidden">
                     <motion.div
                         className="h-full bg-lime-500 rounded-full"
                         style={{ width: `${progress}%` }}
@@ -234,7 +215,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 </div>
 
                 {/* Narrative Stack */}
-                <p className="text-[#1A1A1A] text-lg font-medium animate-pulse mt-2">
+                <p className="text-[#1A1A1A] text-lg font-medium animate-pulse">
                     Securing your exclusive rate...
                 </p>
             </div>
@@ -247,7 +228,7 @@ function CustomZoomControl() {
     const map = useMap();
 
     return (
-        <div className="absolute top-[160px] left-5 z-[400] flex flex-col gap-1.5">
+        <div className="absolute top-[72px] left-5 z-[400] flex flex-col gap-1.5">
             <button
                 onClick={() => map.zoomIn()}
                 className="w-10 h-10 bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-white/50 flex items-center justify-center text-slate-700 active:scale-95 transition-all hover:bg-white"
@@ -416,7 +397,7 @@ export default function App() {
                             zoom={10}
                             zoomControl={false}
                             scrollWheelZoom={true}
-                            className="h-full w-full outline-none bg-[#e5e7eb]"
+                            className="h-full w-full outline-none bg-white"
                             attributionControl={false}
                         >
                             <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
@@ -453,9 +434,9 @@ export default function App() {
                     </div>
 
                     <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-[95%] z-[500] pointer-events-none">
-                        <div className="bg-white/95 backdrop-blur-xl rounded-[24px] shadow-xl border border-white/50 p-2 pointer-events-auto relative" ref={dropdownRef}>
+                        <div className="bg-white/95 backdrop-blur-xl rounded-[24px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.18)] border-2 border-white/60 py-1.5 px-2 pointer-events-auto relative" ref={dropdownRef}>
                             <div className="flex items-center gap-1.5 px-1 py-1.5">
-                                <div className="flex items-center gap-1 shrink-0 border-r border-gray-100 pr-1 max-w-[110px]">
+                                <div className="flex items-center gap-1 shrink-0 border-r border-white/60 pr-1 max-w-[110px]">
                                     <button className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
                                         <MapPin size={12} />
                                     </button>
@@ -473,24 +454,28 @@ export default function App() {
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('dates', e)}
+                                            aria-label="Select dates"
+                                            aria-expanded={openDropdown === 'dates'}
                                             className={clsx(
                                                 "whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
                                                 openDropdown === 'dates' ? "bg-slate-100 text-[#1A1A1A] border-gray-300" : "bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 hover:bg-[#1A1A1A]/10"
                                             )}
                                         >
-                                            <Calendar size={10} className="text-slate-400" /> {dateRange} <ChevronDown size={10} className="text-[#1A1A1A]" />
+                                            <Calendar size={10} className="text-slate-600" aria-hidden="true" /> {dateRange} <ChevronDown size={10} className="text-[#1A1A1A]" />
                                         </button>
                                     </div>
 
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('guests', e)}
+                                            aria-label="Select guests"
+                                            aria-expanded={openDropdown === 'guests'}
                                             className={clsx(
                                                 "whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
                                                 openDropdown === 'guests' ? "bg-slate-100 text-[#1A1A1A] border-gray-300" : "bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 hover:bg-[#1A1A1A]/10"
                                             )}
                                         >
-                                            <Users size={10} className="text-slate-400" /> {guestCount} <ChevronDown size={10} className="text-[#1A1A1A]" />
+                                            <Users size={10} className="text-slate-600" aria-hidden="true" /> {guestCount} <ChevronDown size={10} className="text-[#1A1A1A]" />
                                         </button>
                                     </div>
 
@@ -533,7 +518,7 @@ export default function App() {
                         </div>
                     </div>
 
-                    <div className="absolute bottom-1 left-0 w-full z-[100] h-[340px] pb-2 pointer-events-none">
+                    <div className="absolute bottom-0 left-0 w-full z-[100] h-[340px] pointer-events-none">
                         <div 
                             className="absolute left-0 bottom-[24px] z-[500] pointer-events-auto"
                         >
@@ -577,7 +562,7 @@ export default function App() {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 52, scale: 0.98 }}
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="absolute bottom-4 left-0 right-0 pointer-events-auto h-[295px]"
+                                    className="absolute bottom-2 left-0 right-0 pointer-events-auto h-[295px]"
                                 >
                                     <div
                                         ref={cardsContainerRef}
@@ -600,8 +585,8 @@ export default function App() {
                                                     }}
                                                 >
                                                     <div className={clsx(
-                                                        "relative h-full rounded-[24px] overflow-hidden backdrop-blur-[20px] border border-white/80 p-2.5 flex flex-col transition-all duration-500",
-                                                        isActive ? "shadow-[0_12px_32px_rgba(0,0,0,0.18)] bg-white" : "shadow-[0_8px_24px_rgba(0,0,0,0.12)] bg-white/85"
+                                                        "relative h-full rounded-[24px] overflow-hidden border border-white/80 p-2.5 flex flex-col transition-all duration-500",
+                                                        isActive ? "shadow-[0_12px_32px_rgba(0,0,0,0.18)] bg-white" : "shadow-[0_8px_24px_rgba(0,0,0,0.12)] bg-white"
                                                     )}>
                                                         {isActive && bookingState !== 'idle' && (
                                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#135bec] to-transparent animate-pulse opacity-80 z-50"></div>
@@ -609,34 +594,34 @@ export default function App() {
 
                                                         <div className="h-[141px] w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
                                                             <img src={place.image} alt={place.name} className="w-full h-full object-cover transform decoration-0 group-hover:scale-105 transition-transform duration-700" />
-                                                            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                                                                <Star size={9} className="text-yellow-500" fill="currentColor" />
+                                                            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                                                                <Star size={9} className="text-amber-500" fill="currentColor" />
                                                                 <span className="text-[9px] font-bold text-slate-900">{place.rating}</span>
                                                             </div>
                                                             {place.tag && (
                                                                 <div className={clsx(
-                                                                    "absolute bottom-4 left-4 px-4 py-2 shadow-lg transform -rotate-3 z-10",
+                                                                    "absolute top-4 left-4 px-3 py-1 md:px-4 md:py-2 shadow-lg transform -rotate-3 z-10",
                                                                     place.tagClass
                                                                 )}>
-                                                                    <span className="text-[18px] font-bold tracking-normal leading-none" style={{ fontFamily: "'Caveat', cursive" }}>
+                                                                    <span className="text-[14px] md:text-[18px] font-bold tracking-normal leading-none" style={{ fontFamily: "'Caveat', cursive" }}>
                                                                         {place.tag}
                                                                     </span>
                                                                 </div>
                                                             )}
                                                         </div>
 
-                                                        <div className="px-1 pb-0.5 flex-grow flex flex-col justify-start pt-2">
+                                                        <div className="px-1 pb-2 flex-grow flex flex-col justify-start pt-2">
                                                             <div className="mb-1">
-                                                                <h3 className="text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
+                                                                <h3 className="text-[15px] md:text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
                                                             </div>
                                                             <div className="flex justify-between items-baseline mb-1">
-                                                                <p className="text-[12px] text-slate-500 flex items-center font-medium line-clamp-1">
+                                                                <p className="text-[11px] md:text-[12px] text-slate-500 flex items-center font-medium line-clamp-1">
                                                                     <MapPin size={11} className="mr-0.5 text-slate-400" /> {place.distance}
                                                                 </p>
                                                                 <div className="flex items-baseline gap-1 shrink-0">
-                                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">from</span>
-                                                                    <span className="text-[15px] font-black text-[#135bec] leading-none">${place.price}</span>
-                                                                    <span className="text-[10px] font-bold text-slate-400 leading-none">/night</span>
+                                                                    <span className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">from</span>
+                                                                    <span className="text-[13px] md:text-[15px] font-bold text-[#135bec] leading-none">${place.price}</span>
+                                                                    <span className="text-[9px] md:text-[10px] font-bold text-slate-400 leading-none"> / night</span>
                                                                 </div>
                                                             </div>
 
@@ -646,32 +631,36 @@ export default function App() {
                                                                     disabled={bookingState !== 'idle' || !isActive}
                                                                     style={{ borderRadius: '32px' }}
                                                                     className={clsx(
-                                                                        "w-full py-2.5 text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
+                                                                        "w-full py-2 text-[11px] md:text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
                                                                         bookingState === 'idle'
                                                                             ? (isActive ? "bg-[#135bec] hover:bg-blue-600 text-white shadow-blue-500/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400")
-                                                                            : "bg-slate-900 text-white cursor-wait"
+                                                                            : "bg-[#135bec] text-white cursor-wait"
                                                                     )}
                                                                 >
-                                                                    <AnimatePresence mode='wait'>
-                                                                        {bookingState === 'idle' && (
-                                                                            <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-1">
+                                                                    <AnimatePresence mode="wait">
+                                                                        {bookingState === 'idle' ? (
+                                                                            <motion.span
+                                                                                key="idle"
+                                                                                initial={{ opacity: 0, y: 10 }}
+                                                                                animate={{ opacity: 1, y: 0 }}
+                                                                                exit={{ opacity: 0, y: -10 }}
+                                                                                className="flex items-center gap-2"
+                                                                            >
                                                                                 Book Now <ArrowRight size={14} />
                                                                             </motion.span>
-                                                                        )}
-                                                                        {bookingState === 'securing' && (
-                                                                            <motion.span key="securing" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-2">
-                                                                                <div className="w-2.5 h-2.5 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                                                                                Securing...
-                                                                            </motion.span>
-                                                                        )}
-                                                                        {bookingState === 'redirecting' && (
-                                                                            <motion.span key="redirecting" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex items-center gap-2">
+                                                                        ) : (
+                                                                            <motion.span
+                                                                                key="loading"
+                                                                                initial={{ opacity: 0, y: 10 }}
+                                                                                animate={{ opacity: 1, y: 0 }}
+                                                                                exit={{ opacity: 0, y: -10 }}
+                                                                            >
                                                                                 Redirecting...
                                                                             </motion.span>
                                                                         )}
                                                                     </AnimatePresence>
                                                                 </button>
-                                                                <p className="text-[11px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
+                                                                <p className="text-[10px] md:text-[11px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
                                                                     Secure booking. Free cancellation.
                                                                 </p>
                                                             </div>
