@@ -442,8 +442,8 @@ export default function App() {
                     </div>
 
                     <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-[95%] z-[500] pointer-events-none">
-                        <div className="bg-white/90 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border-[3px] border-white/80 p-1 pl-3 pr-3 flex items-center pointer-events-auto overflow-hidden" ref={dropdownRef}>
-                            <div className="flex items-center gap-3 w-full">
+                        <div className="bg-white/90 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border-[3px] border-white/80 p-1 pl-3 pr-3 flex items-center pointer-events-auto relative" ref={dropdownRef}>
+                            <div className="flex items-center gap-3 w-full overflow-hidden rounded-full">
                                 <div className="flex items-center gap-1 shrink-0 border-r border-slate-200 pr-3 max-w-[110px]">
                                     <button className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
                                         <MapPin size={12} />
