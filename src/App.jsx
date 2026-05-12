@@ -586,7 +586,7 @@ export default function App() {
                                                     ref={el => cardRefs.current[place.id] = el}
                                                     data-id={place.id}
                                                     className={clsx(
-                                                        "snap-center shrink-0 w-[86%] h-full relative group",
+                                                        "snap-center shrink-0 w-[95%] h-full relative group",
                                                         isActive ? "z-10" : "z-0"
                                                     )}
                                                     onClick={() => {
@@ -601,7 +601,7 @@ export default function App() {
                                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#135bec] to-transparent animate-pulse opacity-80 z-50"></div>
                                                         )}
 
-                                                        <div className="h-[141px] w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
+                                                        <div className="h-[170px] w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
                                                             <motion.img 
                                                                 src={place.image} 
                                                                 alt={place.name} 
@@ -619,13 +619,13 @@ export default function App() {
                                                                     "group-hover:scale-[1.18] active:scale-[1.25] active:brightness-110"
                                                                 )} 
                                                             />
-                                                            <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                                                            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm z-10">
                                                                 <Star size={9} className="text-amber-500" fill="currentColor" />
                                                                 <span className="text-[11px] font-bold text-slate-900">{place.rating}</span>
                                                             </div>
                                                             {place.tag && (
                                                                 <div className={clsx(
-                                                                    "absolute top-4 left-4 px-3 py-1 md:px-4 md:py-2 shadow-lg transform -rotate-3 z-10",
+                                                                    "absolute top-2 right-2 px-3 py-1 md:px-4 md:py-2 shadow-lg transform -rotate-3 z-10",
                                                                     place.tagClass
                                                                 )}>
                                                                     <span className="text-[14px] md:text-[18px] font-bold tracking-normal leading-none" style={{ fontFamily: "'Caveat', cursive" }}>
@@ -635,15 +635,15 @@ export default function App() {
                                                             )}
                                                         </div>
 
-                                                        <div className="flex-grow flex flex-col justify-start pt-3 pb-0 px-0.5">
+                                                        <div className="flex-grow flex flex-col justify-start pt-1.5 pb-0 px-0.5">
                                                             <div className="mb-0">
                                                                 <h3 className="text-[15px] md:text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
                                                             </div>
-                                                            <div className="flex justify-between items-baseline mt-1 mb-0">
-                                                                <p className="text-[11px] md:text-[12px] text-slate-500 flex items-center font-medium line-clamp-1">
+                                                            <div className="flex justify-between items-baseline mt-0.5 mb-0 border-t border-slate-50 pt-0.5">
+                                                                <p className="text-[11px] md:text-[12px] text-slate-500 flex items-center font-medium line-clamp-1 h-full">
                                                                     <MapPin size={11} className="mr-0.5 text-slate-400" /> {place.distance}
                                                                 </p>
-                                                                <div className="flex items-baseline gap-1 shrink-0">
+                                                                <div className="flex items-baseline gap-1 shrink-0 h-full">
                                                                     <span className="text-[11px] font-bold text-slate-900 leading-none">from</span>
                                                                     <span className="text-[13px] md:text-[15px] font-bold text-[#135bec] leading-none">${place.price}</span>
                                                                     <span className="text-[11px] font-bold text-slate-900 leading-none"> / night</span>
