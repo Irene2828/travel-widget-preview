@@ -27,7 +27,7 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="bg-white p-6 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
+            className="bg-white p-6 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
         >
             <div className="flex justify-between items-center px-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Select Date</span>
@@ -76,7 +76,7 @@ const GuestDropdown = ({ count, setCount, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white p-6 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-64 ring-1 ring-black/5"
+        className="bg-white p-6 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-64 ring-1 ring-black/5"
     >
         <div className="flex items-center justify-between bg-white/50 rounded-2xl p-2">
             <button onClick={() => setCount(Math.max(1, count - 1))} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">-</button>
@@ -91,7 +91,7 @@ const FilterDropdown = ({ selected, setSelected, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white p-2 rounded-[32px] shadow-[0_24px_48px_rgba(0,0,0,0.15)] border border-white/50 z-[1000] w-56 overflow-hidden ring-1 ring-black/5"
+        className="bg-white p-2 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-56 overflow-hidden ring-1 ring-black/5"
     >
         {['Top Rated', 'Rice Fields Nearby', 'Sea View Villas', 'Private Pool'].map(f => (
             <button
@@ -434,9 +434,9 @@ export default function App() {
                     </div>
 
                     <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-[95%] z-[500] pointer-events-none">
-                        <div className="bg-white/95 backdrop-blur-xl rounded-[24px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.18)] border-2 border-white/60 py-1.5 px-2 pointer-events-auto relative" ref={dropdownRef}>
-                            <div className="flex items-center gap-1.5 px-1 py-1.5">
-                                <div className="flex items-center gap-1 shrink-0 border-r border-white/60 pr-1 max-w-[110px]">
+                        <div className="bg-white/95 backdrop-blur-xl rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 py-1 px-2 pointer-events-auto relative" ref={dropdownRef}>
+                            <div className="flex items-center gap-1.5">
+                                <div className="flex items-center gap-1 shrink-0 border-r border-white/60 pr-0.5 max-w-[110px]">
                                     <button className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
                                         <MapPin size={12} />
                                     </button>
@@ -450,7 +450,7 @@ export default function App() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-0.5 carousel-momentum">
+                                <div className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-1.5 carousel-momentum [mask-image:linear-gradient(to_right,black_85%,transparent)]">
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('dates', e)}
@@ -488,7 +488,7 @@ export default function App() {
                                         </button>
                                     </div>
 
-                                    <div className="relative shrink-0 pr-4">
+                                    <div className="relative shrink-0 pr-12">
                                         <button className="whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
                                             <SlidersHorizontal size={10} className="text-slate-400" /> More
                                         </button>
@@ -562,11 +562,11 @@ export default function App() {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 52, scale: 0.98 }}
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="absolute bottom-2 left-0 right-0 pointer-events-auto h-[295px]"
+                                    className="absolute bottom-0 left-0 right-0 pointer-events-auto h-[295px]"
                                 >
                                     <div
                                         ref={cardsContainerRef}
-                                        className="flex overflow-x-auto snap-x snap-mandatory pl-11 pr-4 gap-6 scrollbar-hide pb-1.5 items-stretch h-full carousel-momentum"
+                                        className="flex overflow-x-auto snap-x snap-mandatory pl-11 pr-4 gap-6 scrollbar-hide items-stretch h-full carousel-momentum"
                                         style={{ scrollPaddingLeft: '2.75rem' }}
                                     >
                                         {ACCOMMODATIONS.map((place) => {
