@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { ACCOMMODATIONS } from './data'
-import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, ShieldCheck, Hotel, Eye, EyeOff, X } from 'lucide-react'
+import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, ShieldCheck, Hotel, Eye, EyeOff, X, Pencil } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 
@@ -27,7 +27,7 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="bg-white p-6 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
+            className="bg-white/90 backdrop-blur-xl p-6 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
         >
             <div className="flex justify-between items-center px-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Select Date</span>
@@ -41,7 +41,7 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
                         onClick={() => setRange(m === 'FEB' ? 'Dates' : `${m} 2026`)}
                         className={clsx(
                             "text-xs font-bold tracking-widest shrink-0 transition-colors active-scale transition-tactile", 
-                            (dateRange.toUpperCase().includes(m) || (m === 'FEB' && dateRange === 'Dates')) ? "text-slate-900" : "text-slate-300 hover:text-slate-500"
+                            (dateRange.toUpperCase().includes(m) || (m === 'FEB' && dateRange === 'Dates')) ? "text-slate-900" : "text-slate-500 hover:text-slate-600"
                         )}
                     >
                         {m}
@@ -56,7 +56,7 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
                     return (
                         <button
                             key={i}
-                            onClick={() => { setRange(label); close(); }}
+                            onClick={() => { setRange(label); }}
                             className={clsx(
                                 "w-12 h-16 shrink-0 rounded-2xl flex flex-col items-center justify-center gap-1 snap-center transition-all active-scale transition-tactile",
                                 isSelected ? "bg-transparent text-slate-900 shadow-sm shadow-slate-900/5 border border-slate-900/60" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
@@ -76,7 +76,7 @@ const GuestDropdown = ({ count, setCount, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white p-6 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-64 ring-1 ring-black/5"
+        className="bg-white/90 backdrop-blur-xl p-6 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-64 ring-1 ring-black/5"
     >
         <div className="flex items-center justify-between bg-white/50 rounded-2xl p-2">
             <button onClick={() => setCount(Math.max(1, count - 1))} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">-</button>
@@ -91,7 +91,7 @@ const FilterDropdown = ({ selected, setSelected, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white p-2 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-56 overflow-hidden ring-1 ring-black/5"
+        className="bg-white/90 backdrop-blur-xl p-2 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-56 overflow-hidden ring-1 ring-black/5"
     >
         {['Top Rated', 'Rice Fields Nearby', 'Sea View Villas', 'Private Pool'].map(f => (
             <button
@@ -120,7 +120,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
     const [stage, setStage] = useState('concierge');
 
     useEffect(() => {
-        const duration = 1760; 
+        const duration = 1000; 
         const startTime = Date.now();
 
         const animate = () => {
@@ -140,7 +140,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 setProgress(100);
                 setDisplayedPrice(hotel.price);
                 setIsComplete(true);
-                setTimeout(() => setStage('redirect'), 1200);
+                setTimeout(() => setStage('redirect'), 400);
             }
         };
 
@@ -228,7 +228,7 @@ function CustomZoomControl() {
     const map = useMap();
 
     return (
-        <div className="absolute top-[72px] left-5 z-[400] flex flex-col gap-1.5">
+        <div className="absolute top-[80px] left-5 z-[400] flex flex-col gap-1.5">
             <button
                 onClick={() => map.zoomIn()}
                 className="w-10 h-10 bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-white/50 flex items-center justify-center text-slate-700 active:scale-95 transition-all hover:bg-white"
@@ -330,21 +330,25 @@ export default function App() {
     const handlePinClick = (id) => {
         setIsCardsVisible(true);
         setActiveId(id);
-        const card = cardRefs.current[id];
-        if (card && cardsContainerRef.current) {
-            isProgrammaticScroll.current = true;
-
-            card.scrollIntoView({
-                behavior: 'smooth',
-                inline: 'center',
-                block: 'nearest'
-            });
-
-            setTimeout(() => {
-                isProgrammaticScroll.current = false;
-            }, 800);
-        }
+        
+        // Ensure the gallery is rendered before scrolling
+        setTimeout(() => {
+            const card = cardRefs.current[id];
+            if (card && cardsContainerRef.current) {
+                isProgrammaticScroll.current = true;
+                card.scrollIntoView({
+                    behavior: 'smooth',
+                    inline: 'center',
+                    block: 'nearest'
+                });
+                setTimeout(() => {
+                    isProgrammaticScroll.current = false;
+                }, 800);
+            }
+        }, 150);
     };
+
+
 
     const handleBook = (e, id) => {
         e.stopPropagation();
@@ -425,7 +429,8 @@ export default function App() {
                                         position={[place.lat, place.lng]}
                                         icon={icon}
                                         eventHandlers={{
-                                            click: () => handlePinClick(place.id)
+                                            click: () => handlePinClick(place.id),
+                                            mouseover: () => handlePinClick(place.id)
                                         }}
                                     />
                                 );
@@ -440,13 +445,16 @@ export default function App() {
                                     <button className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
                                         <MapPin size={12} />
                                     </button>
-                                    <div className="flex flex-col justify-center min-w-0 gap-1">
-                                        <label className="text-[8px] font-black text-[#007E8F] uppercase tracking-wider leading-none truncate">Let's go to</label>
-                                        <input
-                                            type="text"
-                                            defaultValue="Ubud, Bali"
-                                            className="text-[11px] font-bold text-slate-900 leading-tight bg-transparent border-none p-0 w-full focus:ring-0 placeholder-gray-400 outline-none truncate"
-                                        />
+                                    <div className="flex flex-col justify-center min-w-0 gap-0.5">
+                                        <label className="text-[11px] font-black text-[#007E8F] uppercase tracking-wider leading-none truncate">Let's go to</label>
+                                        <div className="flex items-center gap-1">
+                                            <input
+                                                type="text"
+                                                defaultValue="Ubud, Bali"
+                                                className="text-[11px] font-bold text-slate-900 leading-tight bg-transparent border-none p-0 w-full focus:ring-0 placeholder-gray-400 outline-none truncate"
+                                            />
+                                            <Pencil size={9} className="text-slate-400 shrink-0" />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -457,8 +465,8 @@ export default function App() {
                                             aria-label="Select dates"
                                             aria-expanded={openDropdown === 'dates'}
                                             className={clsx(
-                                                "whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
-                                                openDropdown === 'dates' ? "bg-slate-100 text-[#1A1A1A] border-gray-300" : "bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 hover:bg-[#1A1A1A]/10"
+                                                "whitespace-nowrap px-2.5 py-2.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
+                                                openDropdown === 'dates' ? "bg-white/80 backdrop-blur-md text-[#1A1A1A] border-slate-300" : "bg-white/40 backdrop-blur-md text-[#1A1A1A] border-slate-200 hover:bg-white/60"
                                             )}
                                         >
                                             <Calendar size={10} className="text-slate-600" aria-hidden="true" /> {dateRange} <ChevronDown size={10} className="text-[#1A1A1A]" />
@@ -471,8 +479,8 @@ export default function App() {
                                             aria-label="Select guests"
                                             aria-expanded={openDropdown === 'guests'}
                                             className={clsx(
-                                                "whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
-                                                openDropdown === 'guests' ? "bg-slate-100 text-[#1A1A1A] border-gray-300" : "bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 hover:bg-[#1A1A1A]/10"
+                                                "whitespace-nowrap px-2.5 py-2.5 rounded-full text-[10px] font-bold shadow-sm border flex items-center gap-1 active-scale transition-tactile",
+                                                openDropdown === 'guests' ? "bg-white/80 backdrop-blur-md text-[#1A1A1A] border-slate-300" : "bg-white/40 backdrop-blur-md text-[#1A1A1A] border-slate-200 hover:bg-white/60"
                                             )}
                                         >
                                             <Users size={10} className="text-slate-600" aria-hidden="true" /> {guestCount} <ChevronDown size={10} className="text-[#1A1A1A]" />
@@ -482,14 +490,14 @@ export default function App() {
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('filters', e)}
-                                            className="whitespace-nowrap bg-slate-900/60 text-white px-2.5 py-1.5 rounded-full text-[10px] font-bold border border-white/10 backdrop-blur-md flex items-center gap-1 active-scale transition-tactile"
+                                            className="whitespace-nowrap bg-slate-900/50 text-white px-2.5 py-2.5 rounded-full text-[10px] font-bold border border-white/10 backdrop-blur-md flex items-center gap-1 active-scale transition-tactile"
                                         >
                                             <Star size={10} fill="currentColor" className="text-white" /> {selectedFilter} <ChevronDown size={10} className="text-white" />
                                         </button>
                                     </div>
 
                                     <div className="relative shrink-0 pr-12">
-                                        <button className="whitespace-nowrap px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
+                                        <button className="whitespace-nowrap px-2.5 py-2.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
                                             <SlidersHorizontal size={10} className="text-slate-400" /> More
                                         </button>
                                     </div>
@@ -574,6 +582,7 @@ export default function App() {
                                             return (
                                                 <div
                                                     key={place.id}
+                                                    id={`hotel-card-${place.id}`}
                                                     ref={el => cardRefs.current[place.id] = el}
                                                     data-id={place.id}
                                                     className={clsx(
@@ -593,10 +602,26 @@ export default function App() {
                                                         )}
 
                                                         <div className="h-[141px] w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
-                                                            <img src={place.image} alt={place.name} className="w-full h-full object-cover transform decoration-0 group-hover:scale-105 transition-transform duration-700" />
+                                                            <motion.img 
+                                                                src={place.image} 
+                                                                alt={place.name} 
+                                                                animate={{
+                                                                    scale: isActive ? 1.12 : 1,
+                                                                    filter: isActive ? 'brightness(1.1)' : 'brightness(1)'
+                                                                }}
+                                                                transition={{
+                                                                    type: 'spring',
+                                                                    stiffness: 260,
+                                                                    damping: 20
+                                                                }}
+                                                                className={clsx(
+                                                                    "w-full h-full object-cover transform origin-bottom transition-all duration-1000 ease-out",
+                                                                    "group-hover:scale-[1.18] active:scale-[1.25] active:brightness-110"
+                                                                )} 
+                                                            />
                                                             <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                                                                 <Star size={9} className="text-amber-500" fill="currentColor" />
-                                                                <span className="text-[9px] font-bold text-slate-900">{place.rating}</span>
+                                                                <span className="text-[11px] font-bold text-slate-900">{place.rating}</span>
                                                             </div>
                                                             {place.tag && (
                                                                 <div className={clsx(
@@ -610,22 +635,22 @@ export default function App() {
                                                             )}
                                                         </div>
 
-                                                        <div className="px-1 pb-2 flex-grow flex flex-col justify-start pt-2">
-                                                            <div className="mb-1">
+                                                        <div className="flex-grow flex flex-col justify-start pt-3 pb-0 px-0.5">
+                                                            <div className="mb-0">
                                                                 <h3 className="text-[15px] md:text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
                                                             </div>
-                                                            <div className="flex justify-between items-baseline mb-1">
+                                                            <div className="flex justify-between items-baseline mt-1 mb-0">
                                                                 <p className="text-[11px] md:text-[12px] text-slate-500 flex items-center font-medium line-clamp-1">
                                                                     <MapPin size={11} className="mr-0.5 text-slate-400" /> {place.distance}
                                                                 </p>
                                                                 <div className="flex items-baseline gap-1 shrink-0">
-                                                                    <span className="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">from</span>
+                                                                    <span className="text-[11px] font-bold text-slate-900 leading-none">from</span>
                                                                     <span className="text-[13px] md:text-[15px] font-bold text-[#135bec] leading-none">${place.price}</span>
-                                                                    <span className="text-[9px] md:text-[10px] font-bold text-slate-400 leading-none"> / night</span>
+                                                                    <span className="text-[11px] font-bold text-slate-900 leading-none"> / night</span>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex flex-col items-center mt-3">
+                                                            <div className="flex flex-col items-center mt-auto">
                                                                 <button
                                                                     onClick={(e) => handleBook(e, place.id)}
                                                                     disabled={bookingState !== 'idle' || !isActive}
@@ -661,7 +686,7 @@ export default function App() {
                                                                     </AnimatePresence>
                                                                 </button>
                                                                 <p className="text-[10px] md:text-[12px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
-                                                                    Secure booking. Free cancellation.
+                                                                    Free cancellation.
                                                                 </p>
                                                             </div>
                                                         </div>
