@@ -870,7 +870,7 @@ export default function App() {
                                                                     </AnimatePresence>
                                                                 </button>
                                                                 <p className="desktop-window-safe-cancel text-[10px] min-[390px]:text-[11px] md:text-[12px] text-gray-500 text-center mt-1 min-[390px]:mt-1.5 font-semibold tracking-wide leading-none">
-                                                                    Free cancellation.
+                                                                    Free cancellation
                                                                 </p>
                                                             </div>
                                                         </div>
