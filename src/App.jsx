@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { ACCOMMODATIONS } from './data'
-import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, ShieldCheck, Hotel, Eye, EyeOff, X, Pencil } from 'lucide-react'
+import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronUp, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, ShieldCheck, Hotel, Eye, EyeOff, X, Pencil } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 
@@ -14,7 +14,7 @@ function MapController({ activeId, accommodations }) {
     return null;
 }
 
-const DateDropdown = ({ dateRange, setRange, close }) => {
+const DateDropdown = ({ dateRange, selectedMonth, setMonth, setRange, close }) => {
     const months = ['FEB', 'MAR', 'APR', 'MAY', 'JUN'];
     const days = [
         { d: 24, day: 'FRI' }, { d: 25, day: 'SAT' }, { d: 26, day: 'SUN' },
@@ -22,12 +22,14 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
         { d: 2, day: 'THU' }, { d: 3, day: 'FRI' }, { d: 4, day: 'SAT' }
     ];
 
+    const formatMonthLabel = (month) => month.charAt(0) + month.slice(1).toLowerCase();
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="bg-white/90 backdrop-blur-xl p-5 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
+            className="bg-white p-5 rounded-[40px] shadow-[0_18px_40px_rgba(15,23,42,0.14)] border-[3px] border-white z-[1000] w-72 flex flex-col gap-4 ring-1 ring-black/5 overflow-hidden"
         >
             <div className="flex justify-between items-center px-1">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Select Date</span>
@@ -38,10 +40,14 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
                 {months.map((m, i) => (
                     <button 
                         key={m} 
-                        onClick={() => setRange(m === 'FEB' ? 'Dates' : `${m} 2026`)}
+                        onClick={() => {
+                            setMonth(m);
+                            setRange(m === 'FEB' ? 'Dates' : `${m} 2026`);
+                            close();
+                        }}
                         className={clsx(
                             "text-xs font-bold tracking-widest shrink-0 transition-colors active-scale transition-tactile", 
-                            (dateRange.toUpperCase().includes(m) || (m === 'FEB' && dateRange === 'Dates')) ? "text-slate-900" : "text-slate-500 hover:text-slate-600"
+                            selectedMonth === m ? "text-slate-900" : "text-slate-500 hover:text-slate-600"
                         )}
                     >
                         {m}
@@ -51,12 +57,15 @@ const DateDropdown = ({ dateRange, setRange, close }) => {
 
             <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 snap-x">
                 {days.map((item, i) => {
-                    const label = `Feb ${item.d}`;
+                    const label = `${formatMonthLabel(selectedMonth)} ${item.d}`;
                     const isSelected = dateRange === label;
                     return (
                         <button
                             key={i}
-                            onClick={() => { setRange(label); }}
+                            onClick={() => {
+                                setRange(label);
+                                close();
+                            }}
                             className={clsx(
                                 "w-12 h-16 shrink-0 rounded-2xl flex flex-col items-center justify-center gap-1 snap-center transition-all active-scale transition-tactile",
                                 isSelected ? "bg-transparent text-slate-900 shadow-sm shadow-slate-900/5 border border-slate-900/60" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
@@ -76,12 +85,12 @@ const GuestDropdown = ({ count, setCount, close }) => (
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 5 }}
-        className="bg-white/90 backdrop-blur-xl p-5 rounded-[40px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-[3px] border-white/80 z-[1000] w-64 ring-1 ring-black/5"
+        className="bg-white p-5 rounded-[40px] shadow-[0_18px_40px_rgba(15,23,42,0.14)] border-[3px] border-white z-[1000] w-64 ring-1 ring-black/5"
     >
         <div className="flex items-center justify-between bg-white/50 rounded-2xl p-2">
-            <button onClick={() => setCount(Math.max(1, count - 1))} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">-</button>
+            <button onClick={() => { setCount(Math.max(1, count - 1)); close(); }} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">-</button>
             <span className="text-sm font-bold text-slate-900">{count} Guests</span>
-            <button onClick={() => setCount(count + 1)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">+</button>
+            <button onClick={() => { setCount(count + 1); close(); }} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white shadow-sm text-slate-600 font-bold transition-all active-scale">+</button>
         </div>
     </motion.div>
 )
@@ -160,6 +169,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center font-sans"
+                aria-live="polite"
             >
                 <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
@@ -167,7 +177,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                     transition={{ delay: 0.2 }}
                     className="flex flex-col items-center"
                 >
-                    <p className="text-[#1A1A1A] text-lg font-medium animate-pulse mb-2">Opening...</p>
+                    <p className="text-[#1A1A1A] text-lg font-medium animate-pulse mb-2">opening...</p>
                     <h1 className="text-4xl font-bold text-[#003580] tracking-tight">booking.com</h1>
                 </motion.div>
             </motion.div>
@@ -176,49 +186,64 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
 
     return (
         <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-white/90 backdrop-blur-[20px] flex flex-col items-center justify-center p-8 text-center"
+            className="fixed inset-0 z-[9999] overflow-hidden bg-[#eef6f8]/92 backdrop-blur-[24px] flex flex-col items-center justify-center p-8 text-center"
+            aria-live="polite"
         >
-            <div className="max-w-md w-full">
-                {/* Success Icon - Self-drawing SVG */}
-                <div className="mb-8 relative">
-                    <div className="w-20 h-20 flex items-center justify-center mx-auto">
-                        <motion.svg 
-                            viewBox="0 0 24 24" 
-                            className="w-12 h-12 text-lime-500"
-                            fill="none" 
-                            stroke="currentColor" 
-                            strokeWidth="3" 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round"
-                        >
-                            {isComplete && (
-                                <motion.path 
-                                    d="M20 6L9 17l-5-5"
-                                    initial={{ pathLength: 0 }}
-                                    animate={{ pathLength: 1 }}
-                                    transition={{ duration: 0.5, ease: "easeOut" }}
-                                />
-                            )}
-                        </motion.svg>
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute left-[-8%] top-[10%] h-44 w-44 rounded-full bg-[#d8efdf]/80 blur-3xl" />
+                <div className="absolute right-[-10%] top-[24%] h-52 w-52 rounded-full bg-[#dce9ff]/80 blur-3xl" />
+                <div className="absolute left-[18%] bottom-[12%] h-56 w-56 rounded-full bg-[#f3dcc2]/70 blur-3xl" />
+                <div className="absolute right-[8%] bottom-[18%] h-44 w-44 rounded-full bg-[#f6dee5]/65 blur-3xl" />
+                <div className="absolute inset-0 bg-white/28" />
+            </div>
+
+            <motion.div
+                initial={{ scale: 0.96, opacity: 0, y: 12 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                className="relative z-10 max-w-md w-full"
+            >
+                <div className="mb-8 relative flex justify-center">
+                    <div className="relative">
+                        <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white shadow-[0_16px_36px_rgba(15,23,42,0.14)]">
+                            <img
+                                src={hotel.image}
+                                alt={hotel.name}
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-white bg-[#34c759] shadow-[0_10px_22px_rgba(52,199,89,0.28)]">
+                            <Check size={18} className="text-white" strokeWidth={3} />
+                        </div>
                     </div>
                 </div>
 
-                {/* Precision Divider */}
-                <div className="w-full bg-zinc-100 h-1.5 rounded-full mb-6 relative overflow-hidden">
+                <div className="mx-auto max-w-[18ch] text-balance text-[18px] font-bold leading-[1.14] tracking-tight text-[#171717] min-[390px]:text-[20px]">
+                    Securing this rate at {hotel.name}
+                </div>
+
+                <p className="mx-auto mt-4 max-w-[28ch] text-[15px] font-medium leading-[1.45] text-slate-600">
+                    Connecting you to our partner for the best available rate.
+                </p>
+
+                <div className="mx-auto mt-10 h-1.5 w-full max-w-[250px] overflow-hidden rounded-full bg-black/12">
                     <motion.div
-                        className="h-full bg-lime-500 rounded-full"
+                        className="h-full rounded-full bg-[#171717]"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
 
-                {/* Narrative Stack */}
-                <p className="text-[#1A1A1A] text-lg font-medium animate-pulse">
-                    Securing your exclusive rate...
-                </p>
-            </div>
+                <div className="mt-10 flex items-center justify-center gap-3 min-[390px]:gap-3.5">
+                    <div className="rounded-2xl border border-[#d7f3df] bg-white/88 px-3 py-2 min-[390px]:px-4 min-[390px]:py-2.5 text-[12px] min-[390px]:text-[13px] font-semibold tracking-[0.02em] text-[#2f9e44] shadow-[0_8px_18px_rgba(255,255,255,0.35)] backdrop-blur-md">
+                        Price matched
+                    </div>
+                    <div className="text-[28px] min-[390px]:text-[30px] font-bold tracking-tight text-[#171717]">
+                        ${displayedPrice}
+                    </div>
+                </div>
+            </motion.div>
         </motion.div>
     )
 }
@@ -253,9 +278,21 @@ export default function App() {
     const [openDropdown, setOpenDropdown] = useState(null); // 'dates', 'guests', 'filters'
     const [dropdownLeft, setDropdownLeft] = useState(0);
     const [dateRange, setDateRange] = useState('May 11');
+    const [selectedMonth, setSelectedMonth] = useState('MAY');
     const [guestCount, setGuestCount] = useState(1);
     const [selectedFilter, setSelectedFilter] = useState('Top Rated');
     const [isCardsVisible, setIsCardsVisible] = useState(true);
+    const [expandedImageCardId, setExpandedImageCardId] = useState(null);
+
+    const handleDateRangeChange = (value) => {
+        setDateRange(value);
+        setIsCardsVisible(false);
+    };
+
+    const handleGuestCountChange = (value) => {
+        setGuestCount(value);
+        setIsCardsVisible(false);
+    };
 
     const toggleDropdown = (name, event) => {
         if (openDropdown === name) {
@@ -348,6 +385,17 @@ export default function App() {
         }, 150);
     };
 
+    const handleImageToggle = (event, id) => {
+        event.stopPropagation();
+        if (!expandedImageCardId && !isCardsVisible) {
+            setIsCardsVisible(true);
+        }
+        if (activeId !== id) {
+            handlePinClick(id);
+        }
+        setExpandedImageCardId((current) => current === id ? null : id);
+    };
+
 
 
     const handleBook = (e, id) => {
@@ -358,8 +406,8 @@ export default function App() {
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-typography-primary">
-
-            <article className="blog-intro-content max-w-[680px] mx-auto px-[18px] pt-3 pb-2">
+            <article className="max-w-[680px] mx-auto w-full">
+            <div className="blog-intro-content px-[18px] pt-3 pb-2">
                 <a
                     href="/"
                     aria-label="Back to homepage"
@@ -369,8 +417,10 @@ export default function App() {
                     Home
                 </a>
                 <span className="category-tag text-xs font-bold text-[#757575] uppercase tracking-widest mb-3 block">Bali, Indonesia</span>
-                <h1 className="blog-title text-3xl md:text-3xl font-bold text-[#1A1A1A] leading-[1.15] tracking-tight mb-6">
-                    Escaping the Noise: My Secret Spots in Ubud
+                <h1 className="blog-title text-[34px] min-[390px]:text-3xl md:text-3xl font-bold text-[#1A1A1A] leading-[1.12] tracking-tight mb-6">
+                    Escaping the Noise:
+                    <br className="md:hidden" />
+                    {' '}My Secret Spots in Ubud
                 </h1>
                 <div className="author-meta flex items-center gap-3 mb-8">
                     <div className="author-avatar-placeholder w-10 h-10 rounded-full bg-gray-200 overflow-hidden border border-black/5">
@@ -393,10 +443,10 @@ export default function App() {
                         These coordinates are more than just a map; they are the fragments of a Bali that still knows how to be quiet.
                     </p>
                 </div>
-            </article>
+            </div>
 
-            <div className="w-full max-w-[680px] mx-auto px-[18px] mb-5 isolate">
-                <div className="w-full h-[75vh] md:h-[850px] bg-slate-100 md:rounded-[2.5rem] overflow-hidden shadow-[0_11px_22px_rgba(0,0,0,0.12)] relative md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
+            <div className="w-full px-[18px] my-5 isolate">
+                <div className="flex h-[75dvh] min-h-[430px] w-full min-w-0 flex-col bg-slate-100 overflow-hidden shadow-[0_11px_22px_rgba(0,0,0,0.12)] relative md:h-[850px] md:rounded-[2.5rem] md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
 
                     <div className="absolute inset-0 z-0">
                         <MapContainer
@@ -460,7 +510,7 @@ export default function App() {
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-1.5 carousel-momentum [mask-image:linear-gradient(to_right,black_85%,transparent)]">
+                                <div className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto scrollbar-hide py-1.5 carousel-momentum [mask-image:linear-gradient(to_right,black_92%,transparent)]">
                                     <div className="relative shrink-0">
                                         <button
                                             onClick={(e) => toggleDropdown('dates', e)}
@@ -498,7 +548,7 @@ export default function App() {
                                         </button>
                                     </div>
 
-                                    <div className="relative shrink-0 pr-12">
+                                    <div className="relative shrink-0 pr-3">
                                         <button className="whitespace-nowrap px-2 py-2.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
                                             <SlidersHorizontal size={10} className="text-slate-400" /> More
                                         </button>
@@ -518,8 +568,8 @@ export default function App() {
                                             className="relative pointer-events-auto origin-top"
                                             style={{ left: `${dropdownLeft}px` }}
                                         >
-                                            {openDropdown === 'dates' && <DateDropdown dateRange={dateRange} setRange={setDateRange} close={() => setOpenDropdown(null)} />}
-                                            {openDropdown === 'guests' && <GuestDropdown count={guestCount} setCount={setGuestCount} close={() => setOpenDropdown(null)} />}
+                                            {openDropdown === 'dates' && <DateDropdown dateRange={dateRange} selectedMonth={selectedMonth} setMonth={setSelectedMonth} setRange={handleDateRangeChange} close={() => setOpenDropdown(null)} />}
+                                            {openDropdown === 'guests' && <GuestDropdown count={guestCount} setCount={handleGuestCountChange} close={() => setOpenDropdown(null)} />}
                                             {openDropdown === 'filters' && <FilterDropdown selected={selectedFilter} setSelected={setSelectedFilter} close={() => setOpenDropdown(null)} />}
                                         </div>
                                     </motion.div>
@@ -528,9 +578,9 @@ export default function App() {
                         </div>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 w-full z-[100] h-[340px] pointer-events-none">
+                    <div className="absolute bottom-0 left-0 z-[100] h-[35dvh] max-h-[35dvh] w-full pointer-events-none">
                         <div 
-                            className="absolute left-0 bottom-[24px] z-[500] pointer-events-auto"
+                            className="absolute left-0 top-1 z-[500] pointer-events-auto"
                         >
                             <button
                                 onClick={() => setIsCardsVisible(open => !open)}
@@ -572,15 +622,16 @@ export default function App() {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 52, scale: 0.98 }}
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="absolute bottom-1.5 left-0 right-0 pointer-events-auto h-[315px] pb-[4px]"
+                                    className="absolute bottom-0 left-0 right-0 h-full max-h-[35dvh] pointer-events-auto overflow-visible px-0 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2"
                                 >
                                     <div
                                         ref={cardsContainerRef}
-                                        className="flex gap-3.5 overflow-x-auto snap-x snap-mandatory pl-11 pr-4 scrollbar-hide items-stretch h-full carousel-momentum"
+                                        className="flex h-full max-h-[calc(35dvh-env(safe-area-inset-bottom)-16px)] gap-3.5 overflow-x-auto overflow-y-visible snap-x snap-mandatory pl-11 pr-4 scrollbar-hide items-stretch overscroll-contain carousel-momentum"
                                         style={{ scrollPaddingLeft: '2.75rem' }}
                                     >
                                         {ACCOMMODATIONS.map((place) => {
                                             const isActive = place.id === activeId;
+                                            const isImageExpanded = expandedImageCardId === place.id;
                                             return (
                                                 <div
                                                     key={place.id}
@@ -596,14 +647,19 @@ export default function App() {
                                                     }}
                                                 >
                                                     <div className={clsx(
-                                                        "relative h-full rounded-[24px] overflow-hidden border border-white/80 pt-[7.5px] px-[7.5px] pb-[4px] flex flex-col transition-all duration-500",
+                                                        "desktop-window-safe-card relative h-full rounded-[24px] overflow-hidden border border-white/80 pt-[7.5px] px-[7.5px] pb-2 flex flex-col transition-all duration-500",
                                                         isActive ? "shadow-[0_12px_32px_rgba(0,0,0,0.18)] bg-white" : "shadow-[0_8px_24px_rgba(0,0,0,0.12)] bg-white"
                                                     )}>
                                                         {isActive && bookingState !== 'idle' && (
                                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#135bec] to-transparent animate-pulse opacity-80 z-50"></div>
                                                         )}
 
-                                                        <div className="h-[170px] w-full relative rounded-xl overflow-hidden shadow-sm shrink-0">
+                                                        <button
+                                                            type="button"
+                                                            onClick={(event) => handleImageToggle(event, place.id)}
+                                                            className="desktop-window-safe-image h-[103px] min-[390px]:h-[150px] min-[430px]:h-[168px] md:h-[182px] w-full relative rounded-xl min-[390px]:rounded-[18px] overflow-hidden shadow-sm shrink-0 text-left"
+                                                            aria-label={isImageExpanded ? `Collapse ${place.name} image` : `Expand ${place.name} image`}
+                                                        >
                                                             <motion.img 
                                                                 src={place.image} 
                                                                 alt={place.name} 
@@ -617,48 +673,104 @@ export default function App() {
                                                                     damping: 20
                                                                 }}
                                                                 className={clsx(
-                                                                    "w-full h-full object-cover transform origin-bottom transition-all duration-1000 ease-out",
+                                                                    "w-full h-full object-cover object-[center_55%] md:object-center transform origin-bottom transition-all duration-1000 ease-out",
                                                                     "group-hover:scale-[1.18] active:scale-[1.25] active:brightness-110"
                                                                 )} 
                                                             />
+                                                            <div className={clsx(
+                                                                "absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent transition-opacity duration-300",
+                                                                isImageExpanded ? "opacity-100" : "opacity-0"
+                                                            )} />
                                                             <div className="absolute top-2 left-2 bg-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm z-10">
                                                                 <Star size={10} className="text-yellow-500 fill-yellow-500" />
                                                                 <span className="text-[11px] font-bold text-slate-900">{place.rating}</span>
                                                             </div>
                                                             {place.tag && (
                                                                 <div className={clsx(
-                                                                    "absolute top-2 right-2 px-3 py-1 md:px-4 md:py-2 shadow-lg transform -rotate-3 z-10",
+                                                                    "absolute top-2 right-2 px-3 py-1 min-[390px]:px-3.5 min-[390px]:py-1.5 md:px-4 md:py-2 shadow-lg transform -rotate-3 z-10",
                                                                     place.tagClass
                                                                 )}>
-                                                                    <span className="text-[14px] md:text-[18px] font-bold tracking-normal leading-none" style={{ fontFamily: "'Caveat', cursive" }}>
+                                                                    <span className="text-[14px] min-[390px]:text-[15px] md:text-[18px] font-bold tracking-normal leading-none" style={{ fontFamily: "'Caveat', cursive" }}>
                                                                         {place.tag}
                                                                     </span>
                                                                 </div>
                                                             )}
-                                                        </div>
+                                                            <div className="absolute bottom-2 right-2 z-10 rounded-full bg-white/44 px-2.5 py-1.5 min-[390px]:px-3 shadow-[0_8px_18px_rgba(255,255,255,0.18)] backdrop-blur-xl ring-1 ring-white/28">
+                                                                <div className="h-1 w-6 min-[390px]:w-7 rounded-full bg-white/95" />
+                                                            </div>
+                                                        </button>
 
-                                                        <div className="flex flex-col justify-start pt-2.5 pb-0 px-0.5">
+                                                        <AnimatePresence>
+                                                            {isImageExpanded && (
+                                                                <motion.button
+                                                                    type="button"
+                                                                    onClick={(event) => handleImageToggle(event, place.id)}
+                                                                    initial={{ opacity: 0, scale: 0.98 }}
+                                                                    animate={{ opacity: 1, scale: 1 }}
+                                                                    exit={{ opacity: 0, scale: 0.98 }}
+                                                                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                                                                    className="absolute inset-[7.5px] z-30 overflow-hidden rounded-xl text-left"
+                                                                    aria-label={`Collapse ${place.name} image`}
+                                                                >
+                                                                    <motion.img
+                                                                        src={place.image}
+                                                                        alt={place.name}
+                                                                        animate={{ scale: 1.06 }}
+                                                                        transition={{ type: 'spring', stiffness: 180, damping: 22 }}
+                                                                        className="h-full w-full object-cover object-[center_55%] md:object-center"
+                                                                    />
+                                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+                                                                    <div className="absolute top-3 left-3 bg-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                                                                        <Star size={10} className="text-yellow-500 fill-yellow-500" />
+                                                                        <span className="text-[11px] font-bold text-slate-900">{place.rating}</span>
+                                                                    </div>
+                                                                    {place.tag && (
+                                                                        <div className={clsx(
+                                                                            "absolute top-3 right-3 px-3 py-1 shadow-lg transform -rotate-3",
+                                                                            place.tagClass
+                                                                        )}>
+                                                                            <span className="text-[14px] font-bold leading-none" style={{ fontFamily: "'Caveat', cursive" }}>
+                                                                                {place.tag}
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                    <div className="absolute bottom-3 left-3 right-3">
+                                                                        <p className="text-[18px] min-[390px]:text-[20px] font-bold text-white tracking-tight">{place.name}</p>
+                                                                        <div className="mt-2 flex justify-center">
+                                                                            <div className="rounded-full bg-white/48 px-3 py-2 min-[390px]:px-3.5 shadow-[0_8px_24px_rgba(255,255,255,0.22)] backdrop-blur-xl ring-1 ring-white/30">
+                                                                                <div className="h-1 w-10 min-[390px]:w-12 rounded-full bg-white/95" />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/30 p-2 shadow-[0_10px_26px_rgba(255,255,255,0.18)] backdrop-blur-xl ring-1 ring-white/28">
+                                                                        <ChevronRight size={14} className="text-white" />
+                                                                    </div>
+                                                                </motion.button>
+                                                            )}
+                                                        </AnimatePresence>
+
+                                                        <div className="desktop-window-safe-copy flex flex-1 min-h-0 flex-col justify-start pt-2 pb-0 px-0.5">
                                                             <div className="mb-0">
-                                                                <h3 className="text-[15px] md:text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-2">{place.name}</h3>
+                                                                <h3 className="text-[14px] min-[390px]:text-[16px] md:text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-1">{place.name}</h3>
                                                             </div>
                                                             <div className="flex justify-between items-baseline mt-0.5 mb-0 border-t border-slate-50 pt-0.5">
-                                                                <p className="text-[11px] md:text-[12px] text-slate-500 flex items-center font-medium line-clamp-1 h-full">
+                                                                <p className="text-[11px] min-[390px]:text-[12px] md:text-[12px] text-slate-500 flex items-center font-medium line-clamp-1 h-full">
                                                                     <MapPin size={11} className="mr-0.5 text-slate-400" /> {place.distance}
                                                                 </p>
                                                                 <div className="flex items-baseline gap-1 shrink-0 h-full">
                                                                     <span className="text-[11px] font-bold text-slate-900 leading-none">from</span>
-                                                                    <span className="text-[13px] md:text-[15px] font-bold text-[#135bec] leading-none">${place.price}</span>
+                                                                    <span className="text-[13px] min-[390px]:text-[16px] md:text-[15px] font-bold text-[#135bec] leading-none">${place.price}</span>
                                                                     <span className="text-[11px] font-bold text-slate-900 leading-none"> / night</span>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="flex flex-col items-center pt-3.5">
+                                                            <div className="desktop-window-safe-cta-wrap mt-1 flex flex-col items-center pt-1 min-[390px]:pt-1.5">
                                                                 <button
                                                                     onClick={(e) => handleBook(e, place.id)}
                                                                     disabled={bookingState !== 'idle' || !isActive}
                                                                     style={{ borderRadius: '32px' }}
                                                                     className={clsx(
-                                                                        "w-full py-2 md:py-2.5 text-[12px] min-[390px]:text-[14px] font-bold shadow-md transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
+                                                                        "desktop-window-safe-cta w-full min-h-[44px] py-1.5 min-[390px]:min-h-[48px] min-[390px]:py-2.5 min-[430px]:min-h-[48px] min-[430px]:py-2.5 md:min-h-[48px] md:py-2.5 text-[12px] min-[390px]:text-[14px] font-bold shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
                                                                         bookingState === 'idle'
                                                                             ? (isActive ? "bg-[#135bec] hover:bg-blue-600 text-white shadow-blue-500/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400")
                                                                             : "bg-[#135bec] text-white cursor-wait"
@@ -671,9 +783,9 @@ export default function App() {
                                                                                 initial={{ opacity: 0, y: 10 }}
                                                                                 animate={{ opacity: 1, y: 0 }}
                                                                                 exit={{ opacity: 0, y: -10 }}
-                                                                                className="flex items-center gap-2"
+                                                                                className="flex items-center gap-2.5"
                                                                             >
-                                                                                Book Now <ArrowRight size={14} />
+                                                                                Book Now <ArrowRight size={15} className="min-[390px]:size-4" />
                                                                             </motion.span>
                                                                         ) : (
                                                                             <motion.span
@@ -687,7 +799,7 @@ export default function App() {
                                                                         )}
                                                                     </AnimatePresence>
                                                                 </button>
-                                                                <p className="text-[10px] min-[390px]:text-[12px] text-gray-500 text-center mt-1.5 font-bold tracking-wide">
+                                                                <p className="desktop-window-safe-cancel text-[10px] min-[390px]:text-[11px] md:text-[12px] text-gray-500 text-center mt-1 min-[390px]:mt-1.5 font-semibold tracking-wide leading-none">
                                                                     Free cancellation.
                                                                 </p>
                                                             </div>
@@ -704,18 +816,7 @@ export default function App() {
                 </div>
             </div>
 
-            {/* CONCIERGE OVERLAY */}
-            <AnimatePresence>
-                {bookingState === 'concierge' && (
-                    <ConciergeOverlay
-                        hotel={ACCOMMODATIONS.find(h => h.id === activeId)}
-                        onClose={() => setBookingState('idle')}
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* Footer Content */}
-            <div className="max-w-[680px] mx-auto px-[18px] pb-[61px] text-[17px] leading-[1.6] text-typography-primary">
+            <div className="px-[18px] pb-[61px] text-[17px] leading-[1.6] text-typography-primary">
                 <h3 className="text-xl font-bold mb-3">Why this area matters</h3>
                 <p className="text-typography-secondary mb-6">
                     Staying in these specific coordinates puts you exactly 10 minutes from the Monkey Forest but far enough to avoid the tour bus crowds. It’s the sweet spot for digital nomads and peace-seekers alike.
@@ -736,6 +837,17 @@ export default function App() {
                     ))}
                 </div>
             </div>
+            </article>
+
+            {/* CONCIERGE OVERLAY */}
+            <AnimatePresence>
+                {bookingState === 'concierge' && (
+                    <ConciergeOverlay
+                        hotel={ACCOMMODATIONS.find(h => h.id === activeId)}
+                        onClose={() => setBookingState('idle')}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     )
 }
