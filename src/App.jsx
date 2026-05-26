@@ -3,14 +3,45 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { ACCOMMODATIONS } from './data'
-import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronUp, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, ShieldCheck, Hotel, Eye, EyeOff, X, Pencil } from 'lucide-react'
+import { Star, MapPin, ArrowRight, ArrowLeft, Heart, SlidersHorizontal, ChevronDown, ChevronUp, ChevronRight, Check, Calendar, Users, Plus, Minus, ChevronsUpDown, Lock, Hotel, Eye, EyeOff, X, Pencil } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 
-// Map controller for smooth camera flyTo
-// Map controller - REMOVED Auto-Pan
-function MapController({ activeId, accommodations }) {
-    // Static view, highlighting happens via marker state only
+const BALI_MAP_CENTER = [-8.43, 115.18];
+const BALI_MAP_ZOOM = 9;
+
+function MapController({ isCardsVisible }) {
+    const map = useMap();
+
+    useEffect(() => {
+        let frameId;
+        const container = map.getContainer();
+
+        const syncBaliView = () => {
+            cancelAnimationFrame(frameId);
+            frameId = requestAnimationFrame(() => {
+                map.invalidateSize({ pan: false });
+                map.setView(BALI_MAP_CENTER, BALI_MAP_ZOOM, { animate: false });
+            });
+        };
+
+        syncBaliView();
+        const timers = [120, 360, 900].map(delay => setTimeout(syncBaliView, delay));
+        const observer = new ResizeObserver(syncBaliView);
+        observer.observe(container);
+
+        window.addEventListener('resize', syncBaliView);
+        window.visualViewport?.addEventListener('resize', syncBaliView);
+
+        return () => {
+            cancelAnimationFrame(frameId);
+            timers.forEach(clearTimeout);
+            observer.disconnect();
+            window.removeEventListener('resize', syncBaliView);
+            window.visualViewport?.removeEventListener('resize', syncBaliView);
+        };
+    }, [map, isCardsVisible]);
+
     return null;
 }
 
@@ -124,8 +155,6 @@ const FilterDropdown = ({ selected, setSelected, close }) => (
 // Concierge Overlay Component
 const ConciergeOverlay = ({ hotel, onClose }) => {
     const [progress, setProgress] = useState(0);
-    const [displayedPrice, setDisplayedPrice] = useState(0);
-    const [isComplete, setIsComplete] = useState(false);
     const [stage, setStage] = useState('concierge');
 
     useEffect(() => {
@@ -136,25 +165,19 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
             const now = Date.now();
             const elapsed = now - startTime;
             const p = Math.min(elapsed / duration, 1);
-            
-            // Staged easing: cubic ease out
-            const easedP = 1 - Math.pow(1 - p, 3);
-            
+
             setProgress(p * 100);
-            setDisplayedPrice(Math.round(easedP * hotel.price));
 
             if (p < 1) {
                 requestAnimationFrame(animate);
             } else {
                 setProgress(100);
-                setDisplayedPrice(hotel.price);
-                setIsComplete(true);
                 setTimeout(() => setStage('redirect'), 1400);
             }
         };
 
         requestAnimationFrame(animate);
-    }, [hotel.price]);
+    }, []);
 
     useEffect(() => {
         if (stage === 'redirect') {
@@ -189,7 +212,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] overflow-hidden bg-[#eef6f8]/92 backdrop-blur-[24px] flex flex-col items-center justify-center p-8 text-center"
+            className="fixed inset-0 z-[9999] overflow-hidden bg-[#eef6f8]/90 backdrop-blur-[24px] flex flex-col items-center justify-center p-6 text-center"
             aria-live="polite"
         >
             <div className="absolute inset-0 overflow-hidden">
@@ -197,7 +220,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 <div className="absolute right-[-10%] top-[24%] h-52 w-52 rounded-full bg-[#dce9ff]/80 blur-3xl" />
                 <div className="absolute left-[18%] bottom-[12%] h-56 w-56 rounded-full bg-[#f3dcc2]/70 blur-3xl" />
                 <div className="absolute right-[8%] bottom-[18%] h-44 w-44 rounded-full bg-[#f6dee5]/65 blur-3xl" />
-                <div className="absolute inset-0 bg-white/28" />
+                <div className="absolute inset-0 bg-white/50" />
             </div>
 
             <motion.div
@@ -205,7 +228,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 className="relative z-10 max-w-md w-full"
             >
-                <div className="mb-8 relative flex justify-center">
+                <div className="mb-5 relative flex justify-center">
                     <div className="relative">
                         <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white shadow-[0_16px_36px_rgba(15,23,42,0.14)]">
                             <img
@@ -220,27 +243,34 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                     </div>
                 </div>
 
-                <div className="mx-auto max-w-[18ch] text-balance text-[18px] font-bold leading-[1.14] tracking-tight text-[#171717] min-[390px]:text-[20px]">
-                    Securing this rate at {hotel.name}
-                </div>
+                <div className="relative mx-auto max-w-[360px] px-4 py-5 min-[390px]:px-6">
+                    <div className="pointer-events-none absolute inset-x-[-34px] top-[-28px] bottom-[-34px] rounded-full bg-white/70 blur-2xl" />
+                    <div className="pointer-events-none absolute inset-x-[-10px] top-[-6px] bottom-[-12px] rounded-full bg-white/42 blur-xl" />
 
-                <p className="mx-auto mt-4 max-w-[28ch] text-[15px] font-medium leading-[1.45] text-slate-600">
-                    Connecting you to our partner for the best available rate.
-                </p>
+                    <div className="relative">
+                        <div className="mx-auto max-w-[18ch] text-balance text-[20px] font-bold leading-[1.14] tracking-tight text-[#171717] min-[390px]:text-[22px]">
+                            Securing this rate at {hotel.name}
+                        </div>
 
-                <div className="mx-auto mt-10 h-1.5 w-full max-w-[250px] overflow-hidden rounded-full bg-black/12">
-                    <motion.div
-                        className="h-full rounded-full bg-[#171717]"
-                        style={{ width: `${progress}%` }}
-                    />
-                </div>
+                        <p className="mx-auto mt-5 max-w-[28ch] text-[15px] font-medium leading-[1.45] text-slate-500 min-[390px]:text-[16px]">
+                            Connecting you to our partner for the best available rate.
+                        </p>
 
-                <div className="mt-10 flex items-center justify-center gap-3 min-[390px]:gap-3.5">
-                    <div className="rounded-2xl border border-[#d7f3df] bg-white/88 px-3 py-2 min-[390px]:px-4 min-[390px]:py-2.5 text-[12px] min-[390px]:text-[13px] font-semibold tracking-[0.02em] text-[#2f9e44] shadow-[0_8px_18px_rgba(255,255,255,0.35)] backdrop-blur-md">
-                        Price matched
-                    </div>
-                    <div className="text-[28px] min-[390px]:text-[30px] font-bold tracking-tight text-[#171717]">
-                        ${displayedPrice}
+                        <div className="mx-auto mt-8 h-1.5 w-full max-w-[250px] overflow-hidden rounded-full bg-black/12">
+                            <motion.div
+                                className="h-full rounded-full bg-[#171717]"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
+
+                        <div className="mt-8 flex items-center justify-center gap-5">
+                            <div className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-[#bcefc8] bg-white px-5 text-[13px] font-bold text-[#23a34a]">
+                                Price matched
+                            </div>
+                            <div className="min-w-[5ch] text-left text-[32px] font-bold tabular-nums tracking-tight text-[#171717] min-[390px]:text-[34px]">
+                                ${hotel.price}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </motion.div>
@@ -344,13 +374,19 @@ export default function App() {
         const container = cardsContainerRef.current;
         if (!container) return;
 
+        let syncFrame;
         const observer = new IntersectionObserver((entries) => {
             if (isProgrammaticScroll.current) return;
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const id = Number(entry.target.dataset.id);
-                    setActiveId(id);
-                }
+            const mostVisible = entries
+                .filter(entry => entry.isIntersecting)
+                .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+            if (!mostVisible) return;
+
+            cancelAnimationFrame(syncFrame);
+            syncFrame = requestAnimationFrame(() => {
+                const id = Number(mostVisible.target.dataset.id);
+                setActiveId(current => current === id ? current : id);
             });
         }, {
             root: container,
@@ -361,7 +397,10 @@ export default function App() {
             if (card) observer.observe(card);
         });
 
-        return () => observer.disconnect();
+        return () => {
+            cancelAnimationFrame(syncFrame);
+            observer.disconnect();
+        };
     }, []);
     // 2. Map Pin Click
     const handlePinClick = (id) => {
@@ -446,12 +485,12 @@ export default function App() {
             </div>
 
             <div className="w-full px-[18px] my-5 isolate">
-                <div className="flex h-[75dvh] min-h-[430px] w-full min-w-0 flex-col bg-slate-100 overflow-hidden shadow-[0_11px_22px_rgba(0,0,0,0.12)] relative md:h-[850px] md:rounded-[2.5rem] md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
+                <div className="flex h-[75dvh] min-h-[430px] w-full min-w-0 flex-col bg-slate-100 overflow-hidden shadow-[0_11px_22px_rgba(0,0,0,0.12)] relative md:h-[min(850px,calc(100dvh-24px))] md:rounded-[2.5rem] md:border-8 md:border-white box-border ring-1 ring-gray-900/5">
 
                     <div className="absolute inset-0 z-0">
                         <MapContainer
-                            center={[-8.25, 115.1]}
-                            zoom={9}
+                            center={BALI_MAP_CENTER}
+                            zoom={BALI_MAP_ZOOM}
                             zoomControl={false}
                             scrollWheelZoom={true}
                             className="h-full w-full outline-none bg-white"
@@ -459,7 +498,7 @@ export default function App() {
                         >
                             <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
 
-                            <MapController activeId={activeId} accommodations={ACCOMMODATIONS} />
+                            <MapController isCardsVisible={isCardsVisible} />
                             <CustomZoomControl />
 
                             {ACCOMMODATIONS.map((place) => {
@@ -548,8 +587,8 @@ export default function App() {
                                         </button>
                                     </div>
 
-                                    <div className="relative shrink-0 pr-3">
-                                        <button className="whitespace-nowrap px-2 py-2.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
+                                    <div className="relative shrink-0">
+                                        <button className="whitespace-nowrap px-3 py-2.5 rounded-full text-[10px] font-bold shadow-sm border bg-[#1A1A1A]/5 text-[#1A1A1A] border-gray-200 flex items-center gap-1 active-scale transition-tactile hover:bg-[#1A1A1A]/10 shrink-0">
                                             <SlidersHorizontal size={10} className="text-slate-400" /> More
                                         </button>
                                     </div>
@@ -578,7 +617,7 @@ export default function App() {
                         </div>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 z-[100] h-[35dvh] max-h-[35dvh] w-full pointer-events-none">
+                    <div className="hotel-cards-stage absolute bottom-0 left-0 z-[100] w-full pointer-events-none">
                         <div 
                             className="absolute left-0 top-1 z-[500] pointer-events-auto"
                         >
@@ -622,11 +661,11 @@ export default function App() {
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 52, scale: 0.98 }}
                                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                    className="absolute bottom-0 left-0 right-0 h-full max-h-[35dvh] pointer-events-auto overflow-visible px-0 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2"
+                                    className="absolute bottom-0 left-0 right-0 h-full pointer-events-auto overflow-visible px-0 pb-[calc(env(safe-area-inset-bottom)+8px)] pt-2"
                                 >
                                     <div
                                         ref={cardsContainerRef}
-                                        className="flex h-full max-h-[calc(35dvh-env(safe-area-inset-bottom)-16px)] gap-3.5 overflow-x-auto overflow-y-visible snap-x snap-mandatory pl-11 pr-4 scrollbar-hide items-stretch overscroll-contain carousel-momentum"
+                                        className="flex h-full gap-3.5 overflow-x-auto overflow-y-visible snap-x snap-mandatory pl-11 pr-4 scrollbar-hide items-stretch overscroll-contain carousel-momentum"
                                         style={{ scrollPaddingLeft: '2.75rem' }}
                                     >
                                         {ACCOMMODATIONS.map((place) => {
@@ -639,7 +678,7 @@ export default function App() {
                                                     ref={el => cardRefs.current[place.id] = el}
                                                     data-id={place.id}
                                                     className={clsx(
-                                                        "snap-center shrink-0 w-[95%] h-full relative group",
+                                                        "snap-center shrink-0 w-[95%] h-full relative group flex items-end",
                                                         isActive ? "z-10" : "z-0"
                                                     )}
                                                     onClick={() => {
@@ -647,7 +686,7 @@ export default function App() {
                                                     }}
                                                 >
                                                     <div className={clsx(
-                                                        "desktop-window-safe-card relative h-full rounded-[24px] overflow-hidden border border-white/80 pt-[7.5px] px-[7.5px] pb-2 flex flex-col transition-all duration-500",
+                                                        "desktop-window-safe-card relative h-fit max-h-full w-full rounded-[24px] overflow-hidden border border-white/80 pt-[7.5px] px-[7.5px] pb-2 flex flex-col transition-all duration-500",
                                                         isActive ? "shadow-[0_12px_32px_rgba(0,0,0,0.18)] bg-white" : "shadow-[0_8px_24px_rgba(0,0,0,0.12)] bg-white"
                                                     )}>
                                                         {isActive && bookingState !== 'idle' && (
@@ -672,10 +711,7 @@ export default function App() {
                                                                     stiffness: 260,
                                                                     damping: 20
                                                                 }}
-                                                                className={clsx(
-                                                                    "w-full h-full object-cover object-[center_55%] md:object-center transform origin-bottom transition-all duration-1000 ease-out",
-                                                                    "group-hover:scale-[1.18] active:scale-[1.25] active:brightness-110"
-                                                                )} 
+                                                                className="w-full h-full object-cover object-[center_55%] md:object-center origin-bottom"
                                                             />
                                                             <div className={clsx(
                                                                 "absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent transition-opacity duration-300",
@@ -754,10 +790,10 @@ export default function App() {
                                                                 <h3 className="text-[14px] min-[390px]:text-[16px] md:text-[16.5px] font-bold text-slate-900 leading-tight tracking-tight line-clamp-1">{place.name}</h3>
                                                             </div>
                                                             <div className="flex justify-between items-baseline mt-0.5 mb-0 border-t border-slate-50 pt-0.5">
-                                                                <p className="text-[11px] min-[390px]:text-[12px] md:text-[12px] text-slate-500 flex items-center font-medium line-clamp-1 h-full">
-                                                                    <MapPin size={11} className="mr-0.5 text-slate-400" /> {place.distance}
+                                                                <p className="text-[11px] min-[390px]:text-[12px] md:text-[12px] text-slate-500 inline-flex items-baseline font-medium leading-none line-clamp-1">
+                                                                    <MapPin size={11} className="mr-0.5 translate-y-[1px] text-slate-400" /> {place.distance}
                                                                 </p>
-                                                                <div className="flex items-baseline gap-1 shrink-0 h-full">
+                                                                <div className="flex items-baseline gap-1 shrink-0">
                                                                     <span className="text-[11px] font-bold text-slate-900 leading-none">from</span>
                                                                     <span className="text-[13px] min-[390px]:text-[16px] md:text-[15px] font-bold text-[#135bec] leading-none">${place.price}</span>
                                                                     <span className="text-[11px] font-bold text-slate-900 leading-none"> / night</span>
@@ -770,7 +806,7 @@ export default function App() {
                                                                     disabled={bookingState !== 'idle' || !isActive}
                                                                     style={{ borderRadius: '32px' }}
                                                                     className={clsx(
-                                                                        "desktop-window-safe-cta w-full min-h-[44px] py-1.5 min-[390px]:min-h-[48px] min-[390px]:py-2.5 min-[430px]:min-h-[48px] min-[430px]:py-2.5 md:min-h-[48px] md:py-2.5 text-[12px] min-[390px]:text-[14px] font-bold shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
+                                                                        "desktop-window-safe-cta h-[42px] max-h-[46px] w-full py-0 text-[12px] min-[390px]:h-[46px] min-[390px]:text-[14px] font-bold shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
                                                                         bookingState === 'idle'
                                                                             ? (isActive ? "bg-[#135bec] hover:bg-blue-600 text-white shadow-blue-500/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400")
                                                                             : "bg-[#135bec] text-white cursor-wait"
