@@ -776,7 +776,7 @@ export default function App() {
                                                                     </span>
                                                                 </div>
                                                             )}
-                                                            <div className="absolute bottom-2 right-2 z-10 rounded-full bg-white/44 px-2.5 py-1.5 min-[390px]:px-3 shadow-[0_8px_18px_rgba(255,255,255,0.18)] backdrop-blur-xl ring-1 ring-white/28">
+                                                            <div className="absolute bottom-2 right-2 z-10 rounded-full border border-white/75 bg-white/78 px-2.5 py-1.5 min-[390px]:px-3 shadow-[0_8px_18px_rgba(255,255,255,0.18)] backdrop-blur-xl">
                                                                 <div className="h-1 w-6 min-[390px]:w-7 rounded-full bg-white/95" />
                                                             </div>
                                                         </button>
@@ -823,7 +823,7 @@ export default function App() {
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/30 p-2 shadow-[0_10px_26px_rgba(255,255,255,0.18)] backdrop-blur-xl ring-1 ring-white/28">
+                                                                    <div className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/75 bg-white/42 p-2 shadow-[0_10px_26px_rgba(255,255,255,0.18)] backdrop-blur-xl">
                                                                         <ChevronRight size={14} className="text-white" />
                                                                     </div>
                                                                 </motion.button>
