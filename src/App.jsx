@@ -154,30 +154,14 @@ const FilterDropdown = ({ selected, setSelected, close }) => (
 
 // Concierge Overlay Component
 const ConciergeOverlay = ({ hotel, onClose }) => {
-    const [progress, setProgress] = useState(0);
     const [stage, setStage] = useState('concierge');
 
     useEffect(() => {
-        const duration = 1000; 
-        const startTime = Date.now();
+        const progressDuration = 1450;
+        const holdDuration = 900;
+        const timer = setTimeout(() => setStage('redirect'), progressDuration + holdDuration);
 
-        const animate = () => {
-            const now = Date.now();
-            const elapsed = now - startTime;
-            const p = Math.min(elapsed / duration, 1);
-            const easedP = 1 - Math.pow(1 - p, 2.2);
-
-            setProgress(easedP * 100);
-
-            if (p < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                setProgress(100);
-                setTimeout(() => setStage('redirect'), 1400);
-            }
-        };
-
-        requestAnimationFrame(animate);
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
@@ -260,7 +244,9 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                         <div className="mx-auto mt-8 h-1.5 w-full max-w-[250px] overflow-hidden rounded-full bg-[#34c759]/18">
                             <motion.div
                                 className="h-full rounded-full bg-[#34c759]"
-                                style={{ width: `${progress}%` }}
+                                initial={{ width: "0%" }}
+                                animate={{ width: "100%" }}
+                                transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1] }}
                             />
                         </div>
 
@@ -317,12 +303,10 @@ export default function App() {
 
     const handleDateRangeChange = (value) => {
         setDateRange(value);
-        setIsCardsVisible(false);
     };
 
     const handleGuestCountChange = (value) => {
         setGuestCount(value);
-        setIsCardsVisible(false);
     };
 
     const toggleDropdown = (name, event) => {
