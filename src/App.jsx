@@ -741,7 +741,7 @@ export default function App() {
                                                         <button
                                                             type="button"
                                                             onClick={(event) => handleImageToggle(event, place.id)}
-                                                            className="desktop-window-safe-image h-[103px] min-[390px]:h-[150px] min-[430px]:h-[168px] md:h-[182px] w-full relative rounded-xl min-[390px]:rounded-[18px] overflow-hidden shadow-sm shrink-0 text-left focus:outline-none focus:ring-1 focus:ring-inset focus:ring-white/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-white/80"
+                                                            className="desktop-window-safe-image h-[103px] min-[390px]:h-[150px] min-[430px]:h-[168px] md:h-[182px] w-full relative rounded-xl min-[390px]:rounded-[18px] overflow-hidden shadow-sm shrink-0 text-left appearance-none [-webkit-tap-highlight-color:transparent] focus:outline-none focus:ring-1 focus:ring-inset focus:ring-white/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-white/80"
                                                             aria-label={isImageExpanded ? `Collapse ${place.name} image` : `Expand ${place.name} image`}
                                                         >
                                                             <motion.img 
@@ -790,7 +790,7 @@ export default function App() {
                                                                     animate={{ opacity: 1, scale: 1 }}
                                                                     exit={{ opacity: 0, scale: 0.98 }}
                                                                     transition={{ duration: 0.2, ease: 'easeOut' }}
-                                                                    className="absolute inset-[7.5px] z-30 overflow-hidden rounded-xl text-left focus:outline-none focus:ring-1 focus:ring-inset focus:ring-white/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-white/80"
+                                                                    className="absolute inset-[7.5px] z-30 overflow-hidden rounded-xl text-left appearance-none [-webkit-tap-highlight-color:transparent] focus:outline-none focus:ring-1 focus:ring-inset focus:ring-white/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-white/80"
                                                                     aria-label={`Collapse ${place.name} image`}
                                                                 >
                                                                     <motion.img
