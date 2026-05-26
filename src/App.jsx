@@ -251,7 +251,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                         </div>
 
                         <div className="mt-8 flex items-center justify-center gap-5">
-                            <div className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-[#bcefc8] bg-white px-5 text-[13px] font-bold text-[#23a34a]">
+                            <div className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-black/10 bg-white px-5 text-[13px] font-medium text-[#1A1A1A]">
                                 Price matched
                             </div>
                             <div className="min-w-[5ch] text-left text-[32px] font-semibold tabular-nums tracking-tight text-[#171717] min-[390px]:text-[34px]">
@@ -290,6 +290,7 @@ function CustomZoomControl() {
 export default function App() {
     const [activeId, setActiveId] = useState(ACCOMMODATIONS[0]?.id || 1);
     const [bookingState, setBookingState] = useState('idle'); // idle, securing, redirecting, done
+    const [bookingHotelId, setBookingHotelId] = useState(null);
 
     // Dropdown States
     const [openDropdown, setOpenDropdown] = useState(null); // 'dates', 'guests', 'filters'
@@ -468,6 +469,7 @@ export default function App() {
     const handleBook = (e, id) => {
         e.stopPropagation();
         if (bookingState !== 'idle') return;
+        setBookingHotelId(id);
         setBookingState('concierge');
     };
 
@@ -700,6 +702,7 @@ export default function App() {
                                         {ACCOMMODATIONS.map((place) => {
                                             const isActive = place.id === activeId;
                                             const isImageExpanded = expandedImageCardId === place.id;
+                                            const isBookingThisHotel = bookingHotelId === place.id && bookingState !== 'idle';
                                             return (
                                                 <div
                                                     key={place.id}
@@ -718,7 +721,7 @@ export default function App() {
                                                         "desktop-window-safe-card relative h-fit max-h-full w-full rounded-[24px] overflow-hidden border border-white/80 pt-[7.5px] px-[7.5px] pb-2 flex flex-col transition-all duration-500",
                                                         isActive ? "shadow-[0_12px_32px_rgba(0,0,0,0.18)] bg-white" : "shadow-[0_8px_24px_rgba(0,0,0,0.12)] bg-white"
                                                     )}>
-                                                        {isActive && bookingState !== 'idle' && (
+                                                        {isActive && isBookingThisHotel && (
                                                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#135bec] to-transparent animate-pulse opacity-80 z-50"></div>
                                                         )}
 
@@ -836,13 +839,24 @@ export default function App() {
                                                                     style={{ borderRadius: '32px' }}
                                                                     className={clsx(
                                                                         "desktop-window-safe-cta h-[42px] max-h-[46px] w-full py-0 text-[12px] min-[390px]:h-[46px] min-[390px]:text-[14px] font-bold shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2 relative overflow-hidden active-scale transition-tactile",
-                                                                        bookingState === 'idle'
+                                                                        isBookingThisHotel
+                                                                            ? "bg-[#135bec] text-white cursor-wait"
+                                                                            : bookingState === 'idle'
                                                                             ? (isActive ? "bg-[#135bec] hover:bg-blue-600 text-white shadow-blue-500/20 active:scale-[0.98]" : "bg-gray-100 text-gray-400")
-                                                                            : "bg-[#135bec] text-white cursor-wait"
+                                                                            : "bg-gray-100 text-gray-400"
                                                                     )}
                                                                 >
                                                                     <AnimatePresence mode="wait">
-                                                                        {bookingState === 'idle' ? (
+                                                                        {isBookingThisHotel ? (
+                                                                            <motion.span
+                                                                                key="loading"
+                                                                                initial={{ opacity: 0, y: 10 }}
+                                                                                animate={{ opacity: 1, y: 0 }}
+                                                                                exit={{ opacity: 0, y: -10 }}
+                                                                            >
+                                                                                Redirecting...
+                                                                            </motion.span>
+                                                                        ) : (
                                                                             <motion.span
                                                                                 key="idle"
                                                                                 initial={{ opacity: 0, y: 10 }}
@@ -851,15 +865,6 @@ export default function App() {
                                                                                 className="flex items-center gap-2.5"
                                                                             >
                                                                                 Book Now <ArrowRight size={15} className="min-[390px]:size-4" />
-                                                                            </motion.span>
-                                                                        ) : (
-                                                                            <motion.span
-                                                                                key="loading"
-                                                                                initial={{ opacity: 0, y: 10 }}
-                                                                                animate={{ opacity: 1, y: 0 }}
-                                                                                exit={{ opacity: 0, y: -10 }}
-                                                                            >
-                                                                                Redirecting...
                                                                             </motion.span>
                                                                         )}
                                                                     </AnimatePresence>
@@ -908,8 +913,11 @@ export default function App() {
             <AnimatePresence>
                 {bookingState === 'concierge' && (
                     <ConciergeOverlay
-                        hotel={ACCOMMODATIONS.find(h => h.id === activeId)}
-                        onClose={() => setBookingState('idle')}
+                        hotel={ACCOMMODATIONS.find(h => h.id === bookingHotelId) || ACCOMMODATIONS[0]}
+                        onClose={() => {
+                            setBookingState('idle');
+                            setBookingHotelId(null);
+                        }}
                     />
                 )}
             </AnimatePresence>
