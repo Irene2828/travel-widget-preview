@@ -165,8 +165,9 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
             const now = Date.now();
             const elapsed = now - startTime;
             const p = Math.min(elapsed / duration, 1);
+            const easedP = 1 - Math.pow(1 - p, 2.2);
 
-            setProgress(p * 100);
+            setProgress(easedP * 100);
 
             if (p < 1) {
                 requestAnimationFrame(animate);
@@ -267,7 +268,7 @@ const ConciergeOverlay = ({ hotel, onClose }) => {
                             <div className="inline-flex min-h-[44px] items-center justify-center rounded-full border border-[#bcefc8] bg-white px-5 text-[13px] font-bold text-[#23a34a]">
                                 Price matched
                             </div>
-                            <div className="min-w-[5ch] text-left text-[32px] font-bold tabular-nums tracking-tight text-[#171717] min-[390px]:text-[34px]">
+                            <div className="min-w-[5ch] text-left text-[32px] font-semibold tabular-nums tracking-tight text-[#171717] min-[390px]:text-[34px]">
                                 ${hotel.price}
                             </div>
                         </div>
@@ -368,6 +369,8 @@ export default function App() {
     const cardsContainerRef = useRef(null);
     const cardRefs = useRef({});
     const isProgrammaticScroll = useRef(false);
+    const cardsStageRef = useRef(null);
+    const [cardsToggleTop, setCardsToggleTop] = useState(8);
 
     // 1. Scroll-Sync: Observer
     useEffect(() => {
@@ -402,6 +405,47 @@ export default function App() {
             observer.disconnect();
         };
     }, []);
+
+    useEffect(() => {
+        if (!isCardsVisible) return;
+
+        let frameId;
+        let resizeObserver;
+        let activeShell;
+
+        const measureToggleTop = () => {
+            const stage = cardsStageRef.current;
+            const activeCard = cardRefs.current[activeId];
+            activeShell = activeCard?.firstElementChild;
+
+            if (!stage || !activeShell) return;
+
+            const nextTop = Math.max(0, Math.round(
+                activeShell.getBoundingClientRect().top - stage.getBoundingClientRect().top
+            ));
+
+            setCardsToggleTop(current => current === nextTop ? current : nextTop);
+        };
+
+        measureToggleTop();
+        frameId = requestAnimationFrame(measureToggleTop);
+        const timers = [80, 220, 420].map(delay => setTimeout(measureToggleTop, delay));
+
+        resizeObserver = new ResizeObserver(measureToggleTop);
+        if (cardsStageRef.current) resizeObserver.observe(cardsStageRef.current);
+        if (activeShell) resizeObserver.observe(activeShell);
+
+        window.addEventListener('resize', measureToggleTop);
+        window.visualViewport?.addEventListener('resize', measureToggleTop);
+
+        return () => {
+            cancelAnimationFrame(frameId);
+            timers.forEach(clearTimeout);
+            resizeObserver?.disconnect();
+            window.removeEventListener('resize', measureToggleTop);
+            window.visualViewport?.removeEventListener('resize', measureToggleTop);
+        };
+    }, [activeId, expandedImageCardId, isCardsVisible]);
     // 2. Map Pin Click
     const handlePinClick = (id) => {
         setIsCardsVisible(true);
@@ -617,9 +661,10 @@ export default function App() {
                         </div>
                     </div>
 
-                    <div className="hotel-cards-stage absolute bottom-0 left-0 z-[100] w-full pointer-events-none">
+                    <div ref={cardsStageRef} className="hotel-cards-stage absolute bottom-0 left-0 z-[100] w-full pointer-events-none">
                         <div 
-                            className="absolute left-0 top-2 z-[500] pointer-events-auto"
+                            className="hotel-cards-toggle absolute left-0 z-[500] pointer-events-auto"
+                            style={{ top: `${cardsToggleTop}px` }}
                         >
                             <button
                                 onClick={() => setIsCardsVisible(open => !open)}
